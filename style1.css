@@ -1,0 +1,112 @@
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: linear-gradient(120deg, #f6d365, #fda085);
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header button {
+            background-color: #fff;
+            border: none;
+            color: #4CAF50;
+            padding: 10px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        header button:hover {
+            background-color: #45a049;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .container {
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .section {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.4s ease, background-color 0.4s;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            background-color: #f0f8ff;
+        }
+
+        .calendar {
+            background-color: #e0f7fa;
+        }
+
+        .calendar:hover {
+            background-color: #b2ebf2;
+        }
+
+        .stats button, .edit button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .stats button:hover, .edit button:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        progress {
+            width: 100%;
+            height: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: #eee;
+        }
+
+        progress::-webkit-progress-value {
+            background: linear-gradient(90deg, #4caf50, #81c784);
+        }

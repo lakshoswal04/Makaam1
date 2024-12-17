@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <header>
+        <h1>Habit Tracker</h1>
+        <button>Sign Up</button>
+    </header>
+
+    <div class="container">
+        <div class="row">
+            <div class="section">
+                <h3>Max Streak</h3>
+                <p id="max-streak">10 Days</p>
+            </div>
+
+            <div class="section">
+                <h3>Progress</h3>
+                <progress id="progress-bar" value="70" max="100"></progress>
+                <p id="progress-text">70%</p>
+            </div>
+
+            <div class="section">
+                <h3>Statistics</h3>
+                <button onclick="viewStatistics()">View</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="section calendar">
+                <h3>Calendar</h3>
+                <p>(Hover to view details)</p>
+                <div id="calendar-content">[Calendar goes here]</div>
+            </div>
+
+            <div class="section edit">
+                <h3>Edit</h3>
+                <button onclick="addHabit()">Add Habit</button>
+                <button onclick="removeHabit()">Remove Habit</button>
+            </div>
+        </div>
+    </div>
+
+   <script src="script1.js"></script>
+    
+</body>
+</html>
