@@ -31,7 +31,7 @@ const Features = () => {
           <p className="text-primary-500 font-medium uppercase tracking-wider mb-2">FEATURES</p>
           <h2 className="text-3xl md:text-4xl font-bold">Everything you need to succeed</h2>
           <p className="text-gray-300 mt-4 max-w-2xl mx-auto">
-            PathFinder combines AI-powered guidance with curated resources to 
+            Makaam combines AI-powered guidance with curated resources to 
             help you navigate your career journey.
           </p>
         </div>

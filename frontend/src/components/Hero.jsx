@@ -10,7 +10,7 @@ const Hero = () => {
               Navigate your <span className="text-primary-500">career journey</span>
             </h1>
             <p className="text-lg text-gray-300 max-w-lg">
-              PathFinder creates personalized career roadmaps for students 
+              Makaam creates personalized career roadmaps for students 
               and professionals, helping you discover the right path, build 
               relevant skills, and achieve your goals.
             </p>

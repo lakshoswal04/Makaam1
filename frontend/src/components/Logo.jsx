@@ -13,7 +13,7 @@ const Logo = ({ className = 'h-8 w-auto' }) => {
         fill="#7c3aed"/>
         <path d="M24.375 11.625L20.625 15.375L18.75 13.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
-      <span className="text-xl">PathFinder</span>
+      <span className="text-xl">Makaam</span>
     </Link>
   )
 }

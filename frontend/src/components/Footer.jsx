@@ -45,7 +45,7 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-dark-500 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500">© 2025 PathFinder. All rights reserved.</p>
+          <p className="text-gray-500">© 2025 Makaam. All rights reserved.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link to="#" className="text-gray-400 hover:text-primary-400">
               <span className="sr-only">Twitter</span>
