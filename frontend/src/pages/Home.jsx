@@ -8,7 +8,9 @@ const Home = () => {
     <div className="min-h-screen bg-dark-500">
       <Navbar />
       <Hero />
-      <Features />
+      <div className="pt-10">
+        <Features />
+      </div>
       <Footer />
     </div>
   )

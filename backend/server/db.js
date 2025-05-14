@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/auth_db";
+// Use a more reliable connection string with fallback
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/auth_db";
 
 const connectDB = async () => {
     try {
+        console.log("Attempting to connect to MongoDB at:", MONGO_URI);
         await mongoose.connect(MONGO_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -11,7 +13,9 @@ const connectDB = async () => {
         console.log("MongoDB connected successfully");
     } catch (error) {
         console.error("MongoDB connection error:", error.message);
-        process.exit(1);
+        console.log("Make sure MongoDB is running on your system");
+        // Don't exit the process, just log the error
+        // process.exit(1);
     }
 };
 

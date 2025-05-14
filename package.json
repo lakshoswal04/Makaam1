@@ -1,0 +1,23 @@
+{
+  "name": "makaam1",
+  "version": "1.0.0",
+  "description": "Full-stack application with React frontend and Express backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend/server && node index.js",
+    "client": "cd frontend && npm run dev",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend/server && npm install"
+  },
+  "keywords": [
+    "react",
+    "express",
+    "mongodb",
+    "authentication"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

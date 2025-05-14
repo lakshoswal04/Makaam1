@@ -1,16 +1,25 @@
 import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
-import { FaGoogle } from 'react-icons/fa'
+import { useAuth } from '../context/AuthContext'
 
 const SignUp = () => {
+  const { register, isAuthenticated, loading } = useAuth()
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
   
   const [errors, setErrors] = useState({})
+  const [apiError, setApiError] = useState('')
+
+  // Redirect if already authenticated
+  if (isAuthenticated && !loading) {
+    return <Navigate to="/" />
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,13 +35,19 @@ const SignUp = () => {
         [name]: null
       })
     }
+    // Clear API error when user types
+    if (apiError) setApiError('')
   }
 
   const validate = () => {
     const newErrors = {}
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required'
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required'
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required'
     }
     
     if (!formData.email.trim()) {
@@ -55,45 +70,104 @@ const SignUp = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     
     if (validate()) {
-      // Handle sign up logic here
-      console.log('Sign up data:', formData)
+      try {
+        // Extract only the fields needed for registration
+        const userData = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password
+        }
+        
+        console.log('Submitting registration data:', userData);
+        await register(userData);
+        // Show success message before redirecting
+        setApiError('');
+      } catch (err) {
+        setApiError(err.response?.data?.message || 'Registration failed. Please try again.');
+        console.error('Registration error details:', err);
+      }
     }
   }
 
   return (
     <AuthLayout 
       title="Create your account" 
-      subtitle="Or" 
-      linkText="sign in to your existing account" 
+      subtitle="Already have an account?" 
+      linkText="Sign in to your existing account" 
       linkUrl="/signin"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-300 mb-1">
-            Full Name
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
+        {apiError && (
+          <div className="p-4 bg-red-500 bg-opacity-10 border border-red-500 rounded-md mb-4 animate-pulse">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-500">Registration Error</h3>
+                <div className="mt-1 text-sm text-red-400">
+                  {apiError}
+                </div>
+              </div>
             </div>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              placeholder="John Doe"
-              className={`input-field pl-10 ${errors.fullName ? 'border-red-500' : ''}`}
-              value={formData.fullName}
-              onChange={handleChange}
-            />
           </div>
-          {errors.fullName && <p className="mt-1 text-sm text-red-500">{errors.fullName}</p>}
+        )}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-1">
+              First Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                required
+                placeholder="John"
+                className={`input-field pl-10 ${errors.firstName ? 'border-red-500' : ''}`}
+                value={formData.firstName}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
+          </div>
+          
+          <div>
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-1">
+              Last Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                required
+                placeholder="Doe"
+                className={`input-field pl-10 ${errors.lastName ? 'border-red-500' : ''}`}
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </div>
+            {errors.lastName && <p className="mt-1 text-sm text-red-500">{errors.lastName}</p>}
+          </div>
         </div>
 
         <div>
@@ -178,24 +252,7 @@ const SignUp = () => {
           </button>
         </div>
         
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-dark-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-dark-400 text-gray-400">Or continue with</span>
-          </div>
-        </div>
 
-        <div>
-          <button
-            type="button"
-            className="w-full flex justify-center items-center gap-3 bg-dark-300 hover:bg-dark-200 text-white py-3 px-4 rounded-md transition-all duration-200 font-medium border border-dark-200"
-          >
-            <FaGoogle className="text-red-500" />
-            Google
-          </button>
-        </div>
       </form>
     </AuthLayout>
   )

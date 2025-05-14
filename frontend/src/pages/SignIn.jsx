@@ -1,14 +1,26 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout'
-import { FaGoogle } from 'react-icons/fa'
+import { useAuth } from '../context/AuthContext'
 
 const SignIn = () => {
+  const { login, isAuthenticated, loading, error } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   })
+  const [formError, setFormError] = useState('')
+  
+  // Get the page the user was trying to access
+  const from = location.state?.from || '/'
+
+  // Redirect if already authenticated
+  if (isAuthenticated && !loading) {
+    return <Navigate to={from} />
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -16,22 +28,55 @@ const SignIn = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value
     })
+    // Clear error when user types
+    if (formError) setFormError('')
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Handle sign in logic here
-    console.log('Sign in data:', formData)
+    try {
+      console.log('Submitting login data:', {
+        email: formData.email,
+        password: formData.password
+      });
+      await login({
+        email: formData.email,
+        password: formData.password
+      });
+      setFormError('');
+      // Navigate to the page the user was trying to access or home page
+      navigate(from);
+    } catch (err) {
+      setFormError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      console.error('Login error details:', err);
+    }
   }
 
   return (
     <AuthLayout 
       title="Sign in to your account" 
-      subtitle="Or" 
-      linkText="create a new account" 
+      subtitle="Don't have an account?" 
+      linkText="Create a new account" 
       linkUrl="/signup"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
+        {formError && (
+          <div className="p-4 bg-red-500 bg-opacity-10 border border-red-500 rounded-md mb-4 animate-pulse">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-500">Authentication Error</h3>
+                <div className="mt-1 text-sm text-red-400">
+                  {formError}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">
             Email address
@@ -111,24 +156,7 @@ const SignIn = () => {
           </button>
         </div>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-dark-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-dark-400 text-gray-400">Or continue with</span>
-          </div>
-        </div>
 
-        <div>
-          <button
-            type="button"
-            className="w-full flex justify-center items-center gap-3 bg-dark-300 hover:bg-dark-200 text-white py-3 px-4 rounded-md transition-all duration-200 font-medium border border-dark-200"
-          >
-            <FaGoogle className="text-red-500" />
-            Google
-          </button>
-        </div>
       </form>
     </AuthLayout>
   )
