@@ -13,7 +13,7 @@ connection();
 // middlewares
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: ['http://localhost:3000'], // Frontend running on port 3000
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'x-auth-token']
@@ -23,8 +23,8 @@ app.use(cors({
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Use port 3001 to match the frontend
-const port = 3001;
+// Use port 5000 for the backend server
+const port = 5000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}...`);
 }).on('error', (err) => {
