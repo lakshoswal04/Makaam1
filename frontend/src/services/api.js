@@ -1,13 +1,23 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api'; // Backend server running on port 5000
+// Define multiple potential backend URLs to try
+const BACKEND_PORTS = [5000, 5001, 5002, 5003];
+let currentPortIndex = 0;
 
-// Create axios instance with base URL
+// Function to get the current API URL
+const getApiUrl = () => `http://localhost:${BACKEND_PORTS[currentPortIndex]}/api`;
+
+// Create axios instance with dynamic base URL
 const api = axios.create({
-  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Update baseURL before each request
+api.interceptors.request.use(config => {
+  config.baseURL = getApiUrl();
+  return config;
 });
 
 // Add request interceptor to include auth token in requests
@@ -20,6 +30,32 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Add response interceptor to handle connection errors and try different ports
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    // Only retry for network errors or 5xx server errors
+    const isNetworkError = !error.response;
+    const isServerError = error.response && error.response.status >= 500;
+    
+    if ((isNetworkError || isServerError) && error.config && !error.config._retry) {
+      error.config._retry = true;
+      
+      // Try the next port
+      currentPortIndex = (currentPortIndex + 1) % BACKEND_PORTS.length;
+      console.log(`Trying next backend port: ${BACKEND_PORTS[currentPortIndex]}`);
+      
+      // Update the baseURL for the retry
+      error.config.baseURL = getApiUrl();
+      
+      // Retry the request
+      return api(error.config);
+    }
+    
+    return Promise.reject(error);
+  }
 );
 
 // Auth services
