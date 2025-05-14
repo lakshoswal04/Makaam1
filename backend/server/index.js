@@ -13,7 +13,12 @@ connection();
 // middlewares
 app.use(express.json());
 app.use(cors({
-    origin: ['http://localhost:3000'], // Frontend running on port 3000
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3002',
+        'http://localhost:3003'
+    ], // Multiple frontend ports
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'x-auth-token']
@@ -23,15 +28,32 @@ app.use(cors({
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 
-// Use port 5000 for the backend server
-const port = 5000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}...`);
-}).on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-        console.error(`Port ${port} is already in use. Please try a different port.`);
-    } else {
-        console.error('Server error:', err);
+// Try multiple ports for the backend server
+const ports = [5000, 5001, 5002, 5003];
+
+// Function to try starting the server on different ports
+function startServer(portIndex = 0) {
+    if (portIndex >= ports.length) {
+        console.error('All ports are in use. Please free up one of these ports:', ports);
+        process.exit(1);
+        return;
     }
-    process.exit(1);
-});
+    
+    const port = ports[portIndex];
+    
+    const server = app.listen(port, () => {
+        console.log(`Server is running on port ${port}...`);
+    }).on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.log(`Port ${port} is already in use, trying next port...`);
+            server.close();
+            startServer(portIndex + 1);
+        } else {
+            console.error('Server error:', err);
+            process.exit(1);
+        }
+    });
+}
+
+// Start the server
+startServer();
