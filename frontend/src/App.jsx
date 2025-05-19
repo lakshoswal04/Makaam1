@@ -3,7 +3,8 @@ import Home from './pages/Home'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import Profile from './pages/Profile'
-import Onboarding from './pages/OnBoarding'
+import OnBoardingPage from './pages/OnBoardingPage'
+
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -19,11 +20,11 @@ function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/onboarding" element={
         <ProtectedRoute>
-          <Onboarding />
+          <OnBoardingPage />
         </ProtectedRoute>
       } />
     </Routes>
   )
 }
 
-export default App
+export default App

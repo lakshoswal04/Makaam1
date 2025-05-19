@@ -27,7 +27,7 @@ const interestAreas = [
   'Other'
 ];
 
-const Onboarding = () => {
+const OnBoarding = () => {
   const navigate = useNavigate();
   const { fetchUserProfile } = useAuth();
   const { showToast } = useToast();
@@ -119,7 +119,7 @@ const Onboarding = () => {
 
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">What's your education level?</h2>
+              <h2 className="text-xl font-semibold mb-4">What is your education level?</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {educationLevels.map((level) => (
                   <button
