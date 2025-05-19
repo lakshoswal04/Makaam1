@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
 	lastName: { type: String, required: true },
 	email: { type: String, required: true },
 	password: { type: String, required: true },
+	educationLevel: { type: String },
+	interests: [{ type: String }],
+	skills: { type: String },
+	careerGoals: { type: String },
+	onboardingCompleted: { type: Boolean, default: false },
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -25,8 +30,13 @@ const validate = (data) => {
 		lastName: Joi.string().required().label("Last Name"),
 		email: Joi.string().email().required().label("Email"),
 		password: passwordComplexity().required().label("Password"),
+		educationLevel: Joi.string().label("Education Level"),
+		interests: Joi.array().items(Joi.string()).label("Interests"),
+		skills: Joi.string().label("Skills"),
+		careerGoals: Joi.string().label("Career Goals"),
+		onboardingCompleted: Joi.boolean().label("Onboarding Completed"),
 	});
 	return schema.validate(data);
 };
 
-module.exports = { User, validate };
+module.exports = { User, validate };

@@ -52,6 +52,29 @@ router.get("/me", auth, async (req, res) => {
 	}
 });
 
+// Update user profile
+router.put("/profile", auth, async (req, res) => {
+	try {
+		const user = await User.findById(req.user._id);
+		if (!user) return res.status(404).send({ message: "User not found" });
+
+		// Update allowed fields
+		const allowedUpdates = ['educationLevel', 'interests', 'skills', 'careerGoals', 'onboardingCompleted'];
+		allowedUpdates.forEach(field => {
+			if (req.body[field] !== undefined) {
+				user[field] = req.body[field];
+			}
+		});
+
+		await user.save();
+		const updatedUser = await User.findById(user._id).select("-password");
+		res.status(200).send({ message: "Profile updated successfully", data: updatedUser });
+	} catch (error) {
+		console.error("Error updating user profile:", error);
+		res.status(500).send({ message: "Internal Server Error: " + error.message });
+	}
+});
+
 // Update user password only
 router.put("/me", auth, async (req, res) => {
 	try {
@@ -118,4 +141,4 @@ router.put("/me", auth, async (req, res) => {
 	}
 });
 
-module.exports = router;
+module.exports = router;
