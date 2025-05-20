@@ -24,6 +24,14 @@ export const AuthProvider = ({ children }) => {
       // Ensure we have a valid user profile object
       if (userData && (userData.firstName !== undefined || userData.lastName !== undefined)) {
         setUserProfile(userData);
+        
+        // Log onboarding status for debugging
+        console.log('AuthContext: User onboarding status:', {
+          onboardingCompleted: userData.onboardingCompleted,
+          hasEducationLevel: !!userData.educationLevel,
+          interestsCount: userData.interests?.length || 0
+        });
+        
         return userData;
       } else {
         console.error('AuthContext: Invalid user profile data structure:', userData);

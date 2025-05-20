@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { userService } from '../services/api';
+import api, { userService } from '../services/api';
 import { useToast } from '../context/ToastContext';
 
 const educationLevels = [
@@ -33,6 +33,7 @@ const OnBoarding = () => {
   const { showToast } = useToast();
   
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     educationLevel: '',
     interests: [],
@@ -93,16 +94,23 @@ const OnBoarding = () => {
     if (!validateCurrentStep()) return;
 
     try {
-      await userService.updateProfile({
+      setIsSubmitting(true);
+      // Use the correct endpoint for updating profile
+      const response = await api.put('/users/profile', {
         ...formData,
         onboardingCompleted: true
       });
+      
+      console.log('Onboarding complete response:', response.data);
       await fetchUserProfile();
       showToast('Profile updated successfully!', 'success');
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Error updating profile:', error);
-      showToast('Failed to update profile. Please try again.', 'error');
+      const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.';
+      showToast(errorMessage, 'error');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -179,16 +187,28 @@ const OnBoarding = () => {
             {step > 1 && (
               <button
                 onClick={handleBack}
-                className="px-6 py-2 border border-dark-300 rounded-md hover:bg-dark-300 transition-colors"
+                disabled={isSubmitting}
+                className="px-6 py-2 border border-dark-300 rounded-md hover:bg-dark-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Back
               </button>
             )}
             <button
               onClick={step < 4 ? handleNext : handleSubmit}
-              className="ml-auto px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors"
+              disabled={isSubmitting}
+              className="ml-auto px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center"
             >
-              {step < 4 ? 'Next' : 'Complete'}
+              {isSubmitting && step === 4 ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                step < 4 ? 'Next' : 'Complete'
+              )}
             </button>
           </div>
         </div>

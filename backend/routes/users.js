@@ -52,21 +52,42 @@ router.get("/me", auth, async (req, res) => {
 	}
 });
 
-// Update user profile
+// Update user profile (including onboarding data)
 router.put("/profile", auth, async (req, res) => {
 	try {
+		console.log('Profile update request received:', {
+			userId: req.user._id,
+			educationLevel: req.body.educationLevel,
+			interestsCount: req.body.interests?.length,
+			hasSkills: !!req.body.skills,
+			hasCareerGoals: !!req.body.careerGoals,
+			onboardingCompleted: req.body.onboardingCompleted
+		});
+
 		const user = await User.findById(req.user._id);
-		if (!user) return res.status(404).send({ message: "User not found" });
+		if (!user) {
+			console.error('User not found:', req.user._id);
+			return res.status(404).send({ message: "User not found" });
+		}
+
+		console.log('User found:', { id: user._id, email: user.email });
 
 		// Update allowed fields
 		const allowedUpdates = ['educationLevel', 'interests', 'skills', 'careerGoals', 'onboardingCompleted'];
+		let updatedFields = [];
+
 		allowedUpdates.forEach(field => {
 			if (req.body[field] !== undefined) {
 				user[field] = req.body[field];
+				updatedFields.push(field);
 			}
 		});
 
+		console.log('Updating fields:', updatedFields);
+
 		await user.save();
+		console.log('User profile updated successfully');
+
 		const updatedUser = await User.findById(user._id).select("-password");
 		res.status(200).send({ message: "Profile updated successfully", data: updatedUser });
 	} catch (error) {
