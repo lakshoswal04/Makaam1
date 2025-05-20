@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, requireOnboarding = true }) => {
+  const { isAuthenticated, loading, userProfile } = useAuth();
   const location = useLocation();
   const { showToast } = useToast();
+  const currentPath = location.pathname;
 
   useEffect(() => {
     // Show toast notification if user is not authenticated and tries to access a protected route
@@ -29,7 +30,16 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/signin" state={{ from: location.pathname }} />;
   }
 
-  // Render children if authenticated
+  // Check if user has completed onboarding
+  // Don't redirect if user is already on the onboarding page or if onboarding isn't required for this route
+  if (requireOnboarding && 
+      userProfile && 
+      !userProfile.onboardingCompleted && 
+      currentPath !== '/onboarding') {
+    return <Navigate to="/onboarding" />;
+  }
+
+  // Render children if authenticated and onboarding requirements are met
   return children;
 };
 

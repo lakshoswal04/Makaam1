@@ -10,7 +10,11 @@ import ProtectedRoute from './components/ProtectedRoute'
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={
+        <ProtectedRoute>
+          <Home />
+        </ProtectedRoute>
+      } />
       <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
@@ -19,7 +23,7 @@ function App() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/onboarding" element={
-        <ProtectedRoute>
+        <ProtectedRoute requireOnboarding={false}>
           <OnBoardingPage />
         </ProtectedRoute>
       } />
