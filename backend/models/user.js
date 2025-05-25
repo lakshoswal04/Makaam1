@@ -13,12 +13,20 @@ const userSchema = new mongoose.Schema({
 	skills: { type: String },
 	careerGoals: { type: String },
 	onboardingCompleted: { type: Boolean, default: false },
+	isAdmin: { type: Boolean, default: false },
 });
 
 userSchema.methods.generateAuthToken = function () {
-	const token = jwt.sign({ _id: this._id }, process.env.JWTPRIVATEKEY, {
-		expiresIn: "7d",
-	});
+	const token = jwt.sign(
+		{ 
+			_id: this._id,
+			isAdmin: this.isAdmin || false
+		}, 
+		process.env.JWTPRIVATEKEY, 
+		{
+			expiresIn: "7d",
+		}
+	);
 	return token;
 };
 
@@ -35,6 +43,7 @@ const validate = (data) => {
 		skills: Joi.string().label("Skills"),
 		careerGoals: Joi.string().label("Career Goals"),
 		onboardingCompleted: Joi.boolean().label("Onboarding Completed"),
+		isAdmin: Joi.boolean().label("Is Admin"),
 	});
 	return schema.validate(data);
 };

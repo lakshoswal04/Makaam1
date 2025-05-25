@@ -10,7 +10,9 @@ const SignUp = () => {
     lastName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    adminCode: '',
+    isAdmin: false
   })
   
   const [errors, setErrors] = useState({})
@@ -76,11 +78,16 @@ const SignUp = () => {
     if (validate()) {
       try {
         // Extract only the fields needed for registration
+        // Check if the admin code is correct
+        const isAdmin = formData.adminCode === 'ADMIN123';
+        
         const userData = {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          isAdmin: isAdmin, // Set admin status based on code
+          onboardingCompleted: isAdmin // Skip onboarding for admin users
         }
         
         console.log('Submitting registration data:', userData);
@@ -241,6 +248,22 @@ const SignUp = () => {
             />
           </div>
           {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>}
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="adminCode" className="block text-sm font-medium text-gray-300 mb-1">
+            Admin Code (Optional)
+          </label>
+          <input
+            type="password"
+            id="adminCode"
+            name="adminCode"
+            value={formData.adminCode}
+            onChange={handleChange}
+            className={`w-full px-3 py-2 bg-dark-400 border border-dark-300 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500`}
+            placeholder="Enter admin code if you have one"
+          />
+          <p className="mt-1 text-xs text-gray-500">Leave blank for regular user account</p>
         </div>
 
         <div className="pt-2">

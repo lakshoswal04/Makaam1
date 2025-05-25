@@ -5,7 +5,7 @@ import Logo from './Logo'
 import { FaUser, FaChevronDown } from 'react-icons/fa'
 
 const Navbar = () => {
-  const { isAuthenticated, logout, userProfile } = useAuth()
+  const { isAuthenticated, logout, userProfile, isAdmin } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
 
@@ -54,6 +54,14 @@ const Navbar = () => {
           
           <div className="hidden md:flex ml-10 space-x-8">
             <a href="#features" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Features</a>
+            {isAuthenticated && (
+              <>
+                <Link to="/resources" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Resource Library</Link>
+                {isAdmin && (
+                  <Link to="/admin" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Admin Dashboard</Link>
+                )}
+              </>
+            )}
           </div>
         </div>
         
@@ -84,6 +92,14 @@ const Navbar = () => {
                   <Link to="/profile" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
                     My Profile
                   </Link>
+                  <Link to="/resources" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
+                    Resource Library
+                  </Link>
+                  {isAdmin && (
+                    <Link to="/admin" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <div className="border-t border-dark-300 my-1"></div>
                   <button 
                     onClick={logout}

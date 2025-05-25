@@ -30,11 +30,18 @@ const ProtectedRoute = ({ children, requireOnboarding = true }) => {
     return <Navigate to="/signin" state={{ from: location.pathname }} />;
   }
 
+  // Check if user is an admin - redirect to admin dashboard instead of onboarding
+  if (userProfile && userProfile.isAdmin && currentPath === '/') {
+    return <Navigate to="/admin" />;
+  }
+
   // Check if user has completed onboarding
   // Don't redirect if user is already on the onboarding page or if onboarding isn't required for this route
+  // Skip onboarding for admin users
   if (requireOnboarding && 
       userProfile && 
       !userProfile.onboardingCompleted && 
+      !userProfile.isAdmin && 
       currentPath !== '/onboarding') {
     return <Navigate to="/onboarding" />;
   }

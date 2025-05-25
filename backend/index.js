@@ -6,6 +6,7 @@ const cors = require("cors");
 const connection = require("./db");
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
+const resourceRoutes = require("./routes/resources");
 
 // database connection
 connection();
@@ -27,6 +28,7 @@ app.use(cors({
 // routes
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/resources", resourceRoutes);
 
 // Try multiple ports for the backend server
 const ports = [5000, 5001, 5002, 5003];

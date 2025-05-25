@@ -27,8 +27,15 @@ router.post("/", async (req, res) => {
 			firstName: req.body.firstName,
 			lastName: req.body.lastName,
 			email: req.body.email,
-			password: hashPassword 
+			password: hashPassword,
+			isAdmin: req.body.isAdmin || false, // Set isAdmin flag from request or default to false
+			onboardingCompleted: req.body.onboardingCompleted || false // Set onboardingCompleted flag from request or default to false
 		});
+		
+		// Log if this is an admin user creation
+		if (req.body.isAdmin) {
+			console.log(`Creating admin user with email: ${req.body.email} (onboarding completed: ${req.body.onboardingCompleted})`);
+		}
 		
 		await newUser.save();
 		console.log("User created successfully:", { id: newUser._id, email: newUser.email });
