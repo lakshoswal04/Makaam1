@@ -1,25 +1,30 @@
 import { FaRoad, FaBook, FaChartLine, FaTools } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 const features = [
   {
     icon: <FaRoad className="text-purple-500" size={24} />,
     title: 'Personalized Career Roadmaps',
-    description: 'AI-powered guidance tailored to your skills, goals, and interests'
+    description: 'AI-powered guidance tailored to your skills, goals, and interests',
+    link: null
   },
   {
     icon: <FaBook className="text-purple-500" size={24} />,
     title: 'Curated Learning Resources',
-    description: 'Discover the best courses, books, and articles for your career path'
+    description: 'Discover the best courses, books, and articles for your career path',
+    link: '/resources'
   },
   {
     icon: <FaChartLine className="text-purple-500" size={24} />,
     title: 'Progress Tracking',
-    description: 'Stay motivated with weekly check-ins and clear visualizations of your growth'
+    description: 'Stay motivated with weekly check-ins and clear visualizations of your growth',
+    link: null
   },
   {
     icon: <FaTools className="text-purple-500" size={24} />,
     title: 'Skill Development',
-    description: 'Build relevant skills with practical projects and guided learning paths'
+    description: 'Build relevant skills with practical projects and guided learning paths',
+    link: null
   }
 ]
 
@@ -38,16 +43,30 @@ const Features = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div 
-              key={index}
-              className="bg-dark-400 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-dark-300 border border-dark-300"
-            >
-              <div className="mb-4">
-                {feature.icon}
+            feature.link ? (
+              <Link 
+                key={index}
+                to={feature.link}
+                className="bg-dark-400 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-dark-300 border border-dark-300 block cursor-pointer"
+              >
+                <div className="mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-400">{feature.description}</p>
+              </Link>
+            ) : (
+              <div 
+                key={index}
+                className="bg-dark-400 rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-dark-300 border border-dark-300"
+              >
+                <div className="mb-4">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-400">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-400">{feature.description}</p>
-            </div>
+            )
           ))}
         </div>
       </div>
