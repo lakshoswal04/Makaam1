@@ -109,6 +109,24 @@ export const userService = {
     }
   },
   
+  updateOnboardingData: async (onboardingData) => {
+    try {
+      console.log('Sending onboarding data update:', {
+        educationLevel: onboardingData.educationLevel,
+        interestsCount: onboardingData.interests?.length,
+        hasSkills: !!onboardingData.skills,
+        hasCareerGoals: !!onboardingData.careerGoals
+      });
+      
+      const response = await api.put('/users/profile', onboardingData);
+      console.log('Onboarding data updated successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Update onboarding data error:', error.response?.data?.message || error.message);
+      throw error;
+    }
+  },
+  
   updateProfile: async (userData) => {
     try {
       // Log the request data (hiding sensitive information)
