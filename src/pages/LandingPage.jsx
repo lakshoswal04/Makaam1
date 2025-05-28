@@ -84,8 +84,8 @@ const LandingPage = () => {
             transition={{ delay: 1, duration: 0.8 }}
           >
             <img 
-              src="https://placehold.co/1200x600/252945/FFFFFF/png?text=PathFinder+Dashboard+Preview" 
-              alt="PathFinder Dashboard Preview" 
+              src="https://placehold.co/1200x600/252945/FFFFFF/png?text=Makaam+Dashboard+Preview" 
+              alt="Makaam Dashboard Preview" 
               className="w-full h-auto rounded-xl shadow-2xl glass-card" 
             />
           </motion.div>
