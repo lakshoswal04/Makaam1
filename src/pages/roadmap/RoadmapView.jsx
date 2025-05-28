@@ -283,16 +283,7 @@ const RoadmapView = () => {
               <p className="text-gray-400 mt-2">{roadmap.description}</p>
             </div>
             
-            <div className="flex space-x-3">
-              <button className="btn-secondary flex items-center">
-                <Download className="mr-2 h-5 w-5" />
-                Export
-              </button>
-              <button className="btn-secondary flex items-center">
-                <Share2 className="mr-2 h-5 w-5" />
-                Share
-              </button>
-            </div>
+            
           </div>
           
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
