@@ -96,7 +96,7 @@ const LandingPage = () => {
       <section className="py-20 relative">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">How PathFinder Works</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">How Makaam Works</h2>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto">
               Navigate your career journey with confidence using our AI-powered roadmap
             </p>
@@ -180,7 +180,7 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-6 md:mb-0">
               <Compass className="h-8 w-8 text-primary-500" />
-              <span className="ml-2 text-xl font-bold text-white">PathFinder</span>
+              <span className="ml-2 text-xl font-bold text-white">Makaam</span>
             </div>
             <div className="flex gap-6">
               <a href="#" className="hover:text-primary-400 transition-colors">About</a>
@@ -190,7 +190,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-800 text-center">
-            <p>&copy; {new Date().getFullYear()} PathFinder. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Makaam. All rights reserved.</p>
           </div>
         </div>
       </footer>

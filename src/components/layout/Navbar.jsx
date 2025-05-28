@@ -55,7 +55,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Compass className="h-8 w-8 text-primary-500" />
-              <span className="ml-2 text-xl font-bold">PathFinder</span>
+              <span className="ml-2 text-xl font-bold">Makaam</span>
             </Link>
           </div>
           
