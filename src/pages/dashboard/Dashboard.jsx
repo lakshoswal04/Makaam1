@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { motion } from 'framer-motion';
@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(true);
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -31,12 +32,23 @@ const Dashboard = () => {
         if (currentUser) {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           if (userDoc.exists()) {
-            setUserData(userDoc.data());
+            const userData = userDoc.data();
+            setUserData(userData);
+            
+            // Fetch user's assigned roadmap if it exists
+            if (userData.assignedRoadmapId) {
+              const roadmapDoc = await getDoc(doc(db, 'roadmaps', userData.assignedRoadmapId));
+              if (roadmapDoc.exists()) {
+                setRoadmap({
+                  id: roadmapDoc.id,
+                  ...roadmapDoc.data()
+                });
+                return; // Exit early if we found the roadmap
+              }
+            }
           }
           
-          // Fetch user's roadmap
-          // In a real app, this would come from an API call or Firestore
-          // For demo purposes, we'll use mock data
+          // Fallback to mock data if no roadmap found
           setRoadmap({
             id: 'current',
             title: 'Full Stack Developer Roadmap',
@@ -149,7 +161,7 @@ const Dashboard = () => {
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {roadmap?.phases.map((phase, index) => (
-                  <div 
+                  <motion.div 
                     key={index} 
                     className={`p-3 rounded-lg border ${
                       phase.complete 
@@ -158,6 +170,8 @@ const Dashboard = () => {
                           ? 'border-primary-600 bg-primary-900/20' 
                           : 'border-gray-700 bg-gray-800/50'
                     }`}
+                    onClick={() => navigate(`/roadmap/${roadmap.id}`)}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="flex items-center mb-2">
                       {phase.complete ? (
@@ -176,7 +190,7 @@ const Dashboard = () => {
                       }`}>{phase.name}</span>
                     </div>
                     <p className="text-xs text-gray-400">{phase.description}</p>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
               
@@ -243,12 +257,10 @@ const Dashboard = () => {
                     relevance: 'Medium'
                   }
                 ].map((resource, index) => (
-                  <a 
+                  <Link 
                     key={index} 
-                    href={resource.url}
+                    to={`/resources?search=${encodeURIComponent(resource.title)}`}
                     className="bg-gray-800/50 p-4 rounded-lg hover:bg-gray-800 transition-colors flex flex-col"
-                    target="_blank"
-                    rel="noopener noreferrer"
                   >
                     <h3 className="font-medium text-white mb-1">{resource.title}</h3>
                     <div className="flex items-center text-sm text-gray-400 mb-2">
@@ -265,7 +277,7 @@ const Dashboard = () => {
                         {resource.relevance} Relevance
                       </span>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </motion.div>
