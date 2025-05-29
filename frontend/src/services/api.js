@@ -1,21 +1,18 @@
 import axios from 'axios';
 
 // Set the production API URL for the deployed backend
-const PRODUCTION_API_URL = process.env.REACT_APP_API_URL || 'https://makaam11.onrender.com';
-
-// Define multiple potential backend URLs to try for local development
-const BACKEND_PORTS = [5000, 5001, 5002, 5003];
-let currentPortIndex = 0;
+const PRODUCTION_API_URL = 'https://makaam11.onrender.com';
 
 // Function to get the current API URL
 const getApiUrl = () => {
   // Check if we're in production mode
-  if (process.env.NODE_ENV === 'production' || PRODUCTION_API_URL) {
+  if (process.env.NODE_ENV === 'production') {
     console.log('Using production API URL:', PRODUCTION_API_URL);
     return `${PRODUCTION_API_URL}/api`;
   }
-  // Otherwise use localhost with ports for development
-  return `http://localhost:${BACKEND_PORTS[currentPortIndex]}/api`;
+  // In development, use the Vite proxy
+  console.log('Using Vite proxy for API requests');
+  return '/api';
 };
 
 // Create axios instance with dynamic base URL
@@ -23,6 +20,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Enable sending cookies and auth headers
 });
 
 // Update baseURL before each request
@@ -37,6 +35,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['x-auth-token'] = token;
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
@@ -76,10 +75,10 @@ export const authService = {
       console.log('Login request with:', credentials);
       const response = await api.post('/auth', credentials);
       console.log('Login response:', response.data);
-      if (response.data.data) {
-        localStorage.setItem('token', response.data.data);
+      if (response.data) {
+        localStorage.setItem('token', response.data);
       }
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Login error:', error.response?.data || error.message);
       throw error;

@@ -14,6 +14,7 @@ module.exports = {
     // Groq API Key
     GROQ_API_KEY: "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",
     
-    // Server port
-    PORT: 5000
+    // Server ports (primary and fallbacks)
+    PORT: 3000,
+    FALLBACK_PORTS: [3001, 3002, 3003]
 };

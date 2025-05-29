@@ -66,22 +66,33 @@ export const AuthProvider = ({ children }) => {
       console.log('AuthContext: Logging in with credentials:', credentials);
       const response = await authService.login(credentials);
       console.log('AuthContext: Login successful:', response);
-      const token = response.data;
-      // Decode token to check if user is admin
-      const decodedToken = decodeToken(token);
-      setIsAdmin(decodedToken?.isAdmin || false);
-      setUser({ token });
       
-      // Fetch user profile after successful login
-      await fetchUserProfile();
+      // Store token in localStorage
+      if (response.data) {
+        localStorage.setItem('token', response.data);
+        const token = response.data;
+        // Decode token to check if user is admin
+        const decodedToken = decodeToken(token);
+        setIsAdmin(decodedToken?.isAdmin || false);
+        setUser({ token });
+        
+        // Fetch user profile after successful login
+        const profileData = await fetchUserProfile();
+        if (profileData) {
+          showToast('Welcome back! You have successfully signed in.', 'success', 5000);
+        } else {
+          showToast('Login successful, but unable to load profile. Please try again.', 'warning', 5000);
+        }
+      } else {
+        throw new Error('No token received from server');
+      }
       
-      showToast('Welcome back! You have successfully signed in.', 'success', 5000);
-      // Navigation is now handled in the SignIn component
       return response;
     } catch (error) {
       console.error('AuthContext: Login error:', error);
       const errorMessage = error.response?.data?.message || 'Login failed';
       setError(errorMessage);
+      showToast(errorMessage, 'error', 5000);
       throw error;
     } finally {
       setLoading(false);
