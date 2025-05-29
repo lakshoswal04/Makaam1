@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Map, 
@@ -10,9 +10,12 @@ import {
   Code, 
   PenTool,
   Download,
-  Share2
+  Share2,
+  ExternalLink
 } from 'lucide-react';
 import Loading from '../../components/common/Loading';
+import { doc, getDoc, updateDoc, collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase.config';
 
 const RoadmapView = () => {
   const { id } = useParams();
@@ -21,15 +24,26 @@ const RoadmapView = () => {
   const [expandedPhase, setExpandedPhase] = useState(null);
 
   useEffect(() => {
-    // In a real app, fetch roadmap from API or Firestore
-    // For demo purposes, we'll use mock data
     const fetchRoadmap = async () => {
       try {
         setLoading(true);
         
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Try to fetch roadmap from Firestore
+        if (id) {
+          const roadmapRef = doc(db, 'roadmaps', id);
+          const roadmapSnap = await getDoc(roadmapRef);
+          
+          if (roadmapSnap.exists()) {
+            setRoadmap({
+              id: roadmapSnap.id,
+              ...roadmapSnap.data()
+            });
+            setLoading(false);
+            return;
+          }
+        }
         
+        // If no roadmap found or no id provided, use mock data
         setRoadmap({
           id: 'current',
           title: 'Full Stack Developer Roadmap',
@@ -48,8 +62,8 @@ const RoadmapView = () => {
                   description: 'Learn the building blocks of web development',
                   complete: true,
                   resources: [
-                    { type: 'course', name: 'HTML & CSS Crash Course', url: '#', source: 'freeCodeCamp' },
-                    { type: 'documentation', name: 'MDN Web Docs - HTML', url: '#', source: 'Mozilla' }
+                    { type: 'course', name: 'HTML & CSS Crash Course', url: 'https://www.freecodecamp.org/learn/responsive-web-design/', source: 'freeCodeCamp' },
+                    { type: 'documentation', name: 'MDN Web Docs - HTML', url: 'https://developer.mozilla.org/en-US/docs/Web/HTML', source: 'Mozilla' }
                   ]
                 },
                 {
@@ -57,8 +71,8 @@ const RoadmapView = () => {
                   description: 'Learn the core language for web programming',
                   complete: true,
                   resources: [
-                    { type: 'course', name: 'JavaScript Fundamentals', url: '#', source: 'Codecademy' },
-                    { type: 'book', name: 'Eloquent JavaScript', url: '#', source: 'Marijn Haverbeke' }
+                    { type: 'course', name: 'JavaScript Fundamentals', url: 'https://www.codecademy.com/learn/introduction-to-javascript', source: 'Codecademy' },
+                    { type: 'book', name: 'Eloquent JavaScript', url: 'https://eloquentjavascript.net/', source: 'Marijn Haverbeke' }
                   ]
                 },
                 {
@@ -66,8 +80,8 @@ const RoadmapView = () => {
                   description: 'Learn the basics of component-based UI development',
                   complete: true,
                   resources: [
-                    { type: 'tutorial', name: 'React Official Tutorial', url: '#', source: 'React Docs' },
-                    { type: 'course', name: 'React for Beginners', url: '#', source: 'Wes Bos' }
+                    { type: 'tutorial', name: 'React Official Tutorial', url: 'https://react.dev/learn', source: 'React Docs' },
+                    { type: 'course', name: 'React for Beginners', url: 'https://reactforbeginners.com/', source: 'Wes Bos' }
                   ]
                 }
               ]
@@ -84,8 +98,8 @@ const RoadmapView = () => {
                   description: 'Create complex user interfaces with React',
                   complete: true,
                   resources: [
-                    { type: 'project', name: 'Build a Todo App', url: '#', source: 'Self-guided' },
-                    { type: 'course', name: 'Advanced React Patterns', url: '#', source: 'Frontend Masters' }
+                    { type: 'project', name: 'Build a Todo App', url: 'https://github.com/topics/react-todo-app', source: 'Self-guided' },
+                    { type: 'course', name: 'Advanced React Patterns', url: 'https://frontendmasters.com/courses/advanced-react-patterns/', source: 'Frontend Masters' }
                   ]
                 },
                 {
@@ -94,8 +108,8 @@ const RoadmapView = () => {
                   complete: false,
                   inProgress: true,
                   resources: [
-                    { type: 'documentation', name: 'Redux Documentation', url: '#', source: 'Redux' },
-                    { type: 'tutorial', name: 'Context API Deep Dive', url: '#', source: 'React Docs' }
+                    { type: 'documentation', name: 'Redux Documentation', url: 'https://redux.js.org/', source: 'Redux' },
+                    { type: 'tutorial', name: 'Context API Deep Dive', url: 'https://react.dev/reference/react/useContext', source: 'React Docs' }
                   ]
                 },
                 {
@@ -103,8 +117,8 @@ const RoadmapView = () => {
                   description: 'Connect your frontend to backend services',
                   complete: false,
                   resources: [
-                    { type: 'tutorial', name: 'Fetching Data with React', url: '#', source: 'Robin Wieruch' },
-                    { type: 'documentation', name: 'Axios Documentation', url: '#', source: 'Axios' }
+                    { type: 'tutorial', name: 'Fetching Data with React', url: 'https://www.robinwieruch.de/react-fetching-data/', source: 'Robin Wieruch' },
+                    { type: 'documentation', name: 'Axios Documentation', url: 'https://axios-http.com/docs/intro', source: 'Axios' }
                   ]
                 }
               ]
@@ -120,8 +134,8 @@ const RoadmapView = () => {
                   description: 'Build server-side applications with JavaScript',
                   complete: false,
                   resources: [
-                    { type: 'course', name: 'Learn Node.js', url: '#', source: 'Udemy' },
-                    { type: 'documentation', name: 'Express.js Guide', url: '#', source: 'Express' }
+                    { type: 'course', name: 'Learn Node.js', url: 'https://www.udemy.com/course/nodejs-the-complete-guide/', source: 'Udemy' },
+                    { type: 'documentation', name: 'Express.js Guide', url: 'https://expressjs.com/en/guide/routing.html', source: 'Express' }
                   ]
                 },
                 {
@@ -129,8 +143,8 @@ const RoadmapView = () => {
                   description: 'Connect and query databases from your application',
                   complete: false,
                   resources: [
-                    { type: 'tutorial', name: 'MongoDB with Node.js', url: '#', source: 'MongoDB University' },
-                    { type: 'documentation', name: 'Mongoose Documentation', url: '#', source: 'Mongoose' }
+                    { type: 'tutorial', name: 'MongoDB with Node.js', url: 'https://www.mongodb.com/developer/quickstart/node-crud-tutorial/', source: 'MongoDB University' },
+                    { type: 'documentation', name: 'Mongoose Documentation', url: 'https://mongoosejs.com/docs/guide.html', source: 'Mongoose' }
                   ]
                 },
                 {
@@ -138,8 +152,8 @@ const RoadmapView = () => {
                   description: 'Implement user authentication and secure your app',
                   complete: false,
                   resources: [
-                    { type: 'course', name: 'Web Security Fundamentals', url: '#', source: 'Pluralsight' },
-                    { type: 'tutorial', name: 'JWT Authentication', url: '#', source: 'Auth0 Blog' }
+                    { type: 'course', name: 'Web Security Fundamentals', url: 'https://www.pluralsight.com/courses/web-security-fundamentals', source: 'Pluralsight' },
+                    { type: 'tutorial', name: 'JWT Authentication', url: 'https://auth0.com/docs/authenticate/protocols/oauth2/oauth2-with-jwt', source: 'Auth0 Blog' }
                   ]
                 }
               ]
@@ -155,8 +169,8 @@ const RoadmapView = () => {
                   description: 'Showcase your projects and skills',
                   complete: false,
                   resources: [
-                    { type: 'guide', name: 'Developer Portfolio Guide', url: '#', source: 'freeCodeCamp' },
-                    { type: 'examples', name: 'Inspiring Developer Portfolios', url: '#', source: 'Awwwards' }
+                    { type: 'guide', name: 'Developer Portfolio Guide', url: 'https://www.freecodecamp.org/news/how-to-build-a-portfolio-website-as-a-developer/', source: 'freeCodeCamp' },
+                    { type: 'examples', name: 'Inspiring Developer Portfolios', url: 'https://www.awwwards.com/websites/portfolio/', source: 'Awwwards' }
                   ]
                 },
                 {
@@ -164,8 +178,8 @@ const RoadmapView = () => {
                   description: 'Practice coding challenges and system design',
                   complete: false,
                   resources: [
-                    { type: 'platform', name: 'LeetCode', url: '#', source: 'LeetCode' },
-                    { type: 'book', name: 'Cracking the Coding Interview', url: '#', source: 'Gayle L. McDowell' }
+                    { type: 'platform', name: 'LeetCode', url: 'https://leetcode.com/', source: 'LeetCode' },
+                    { type: 'book', name: 'Cracking the Coding Interview', url: 'https://www.crackingthecodinginterview.com/', source: 'Gayle L. McDowell' }
                   ]
                 },
                 {
@@ -173,8 +187,8 @@ const RoadmapView = () => {
                   description: 'Find opportunities and connect with professionals',
                   complete: false,
                   resources: [
-                    { type: 'community', name: 'Tech Career Growth Community', url: '#', source: 'Discord' },
-                    { type: 'guide', name: 'Developer Resume Guide', url: '#', source: 'Dev.to' }
+                    { type: 'community', name: 'Tech Career Growth Community', url: 'https://discord.com/invite/techcareergrowth', source: 'Discord' },
+                    { type: 'guide', name: 'Developer Resume Guide', url: 'https://dev.to/alexandriawilliams/how-to-write-a-developer-resume-2f0i', source: 'Dev.to' }
                   ]
                 }
               ]
@@ -202,64 +216,94 @@ const RoadmapView = () => {
     }
   };
 
-  const handleMarkComplete = (phaseId, topicIndex) => {
-    // In a real app, this would update the database
+  const handleMarkComplete = async (phaseId, topicIndex) => {
     setRoadmap(prevRoadmap => {
-      const updatedRoadmap = {...prevRoadmap};
-      const phase = updatedRoadmap.phases.find(p => p.id === phaseId);
+      const updatedPhases = [...prevRoadmap.phases];
       
-      if (phase && phase.topics[topicIndex]) {
-        phase.topics[topicIndex].complete = true;
-        phase.topics[topicIndex].inProgress = false;
-        
-        // Check if all topics in phase are complete
-        const allTopicsComplete = phase.topics.every(topic => topic.complete);
-        if (allTopicsComplete) {
-          phase.complete = true;
-          phase.inProgress = false;
-          
-          // Set next phase to in progress
-          const nextPhaseIndex = updatedRoadmap.phases.findIndex(p => p.id === phaseId) + 1;
-          if (nextPhaseIndex < updatedRoadmap.phases.length) {
-            updatedRoadmap.phases[nextPhaseIndex].inProgress = true;
-            if (updatedRoadmap.phases[nextPhaseIndex].topics.length > 0) {
-              updatedRoadmap.phases[nextPhaseIndex].topics[0].inProgress = true;
-            }
-          }
-        }
-        
-        // Update progress percentage
-        const totalTopics = updatedRoadmap.phases.reduce((acc, phase) => acc + phase.topics.length, 0);
-        const completedTopics = updatedRoadmap.phases.reduce((acc, phase) => 
-          acc + phase.topics.filter(topic => topic.complete).length, 0);
-        
-        updatedRoadmap.progress = Math.round((completedTopics / totalTopics) * 100);
+      // Find the phase
+      const phaseIndex = updatedPhases.findIndex(phase => phase.id === phaseId);
+      if (phaseIndex === -1) return prevRoadmap;
+      
+      // Update the topic
+      const updatedTopics = [...updatedPhases[phaseIndex].topics];
+      updatedTopics[topicIndex] = {
+        ...updatedTopics[topicIndex],
+        complete: true,
+        inProgress: false
+      };
+      
+      // Update the phase
+      updatedPhases[phaseIndex] = {
+        ...updatedPhases[phaseIndex],
+        topics: updatedTopics
+      };
+      
+      // Check if all topics in the phase are complete
+      const allTopicsComplete = updatedTopics.every(topic => topic.complete);
+      if (allTopicsComplete) {
+        updatedPhases[phaseIndex].complete = true;
+        updatedPhases[phaseIndex].inProgress = false;
+      }
+      
+      // Calculate overall progress
+      const totalTopics = updatedPhases.reduce((total, phase) => total + phase.topics.length, 0);
+      const completedTopics = updatedPhases.reduce((total, phase) => {
+        return total + phase.topics.filter(topic => topic.complete).length;
+      }, 0);
+      
+      const progress = Math.round((completedTopics / totalTopics) * 100);
+      
+      const updatedRoadmap = {
+        ...prevRoadmap,
+        phases: updatedPhases,
+        progress
+      };
+      
+      // Update in Firestore if this is a real roadmap (has a string id)
+      if (typeof prevRoadmap.id === 'string') {
+        const roadmapRef = doc(db, 'roadmaps', prevRoadmap.id);
+        updateDoc(roadmapRef, updatedRoadmap).catch(error => {
+          console.error('Error updating roadmap:', error);
+        });
       }
       
       return updatedRoadmap;
     });
   };
 
-  const handleMarkInProgress = (phaseId, topicIndex) => {
-    // In a real app, this would update the database
+  const handleMarkInProgress = async (phaseId, topicIndex) => {
     setRoadmap(prevRoadmap => {
-      const updatedRoadmap = {...prevRoadmap};
-      const phase = updatedRoadmap.phases.find(p => p.id === phaseId);
+      const updatedPhases = [...prevRoadmap.phases];
       
-      if (phase && phase.topics[topicIndex]) {
-        // First, reset any other in-progress topics
-        updatedRoadmap.phases.forEach(p => {
-          p.topics.forEach(t => {
-            t.inProgress = false;
-          });
-          p.inProgress = false;
+      // Find the phase
+      const phaseIndex = updatedPhases.findIndex(phase => phase.id === phaseId);
+      if (phaseIndex === -1) return prevRoadmap;
+      
+      // Update the topic
+      const updatedTopics = [...updatedPhases[phaseIndex].topics];
+      updatedTopics[topicIndex] = {
+        ...updatedTopics[topicIndex],
+        inProgress: true
+      };
+      
+      // Update the phase
+      updatedPhases[phaseIndex] = {
+        ...updatedPhases[phaseIndex],
+        topics: updatedTopics,
+        inProgress: true
+      };
+      
+      const updatedRoadmap = {
+        ...prevRoadmap,
+        phases: updatedPhases
+      };
+      
+      // Update in Firestore if this is a real roadmap (has a string id)
+      if (typeof prevRoadmap.id === 'string') {
+        const roadmapRef = doc(db, 'roadmaps', prevRoadmap.id);
+        updateDoc(roadmapRef, updatedRoadmap).catch(error => {
+          console.error('Error updating roadmap:', error);
         });
-        
-        // Set this topic and its phase to in progress
-        phase.topics[topicIndex].inProgress = true;
-        phase.inProgress = true;
-        
-        updatedRoadmap.currentPhase = phaseId;
       }
       
       return updatedRoadmap;
@@ -282,10 +326,7 @@ const RoadmapView = () => {
               </h1>
               <p className="text-gray-400 mt-2">{roadmap.description}</p>
             </div>
-            
-            
           </div>
-          
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="glass-card p-4 flex items-center">
               <div className="h-10 w-10 rounded-full bg-primary-900/30 flex items-center justify-center mr-3">
@@ -296,7 +337,6 @@ const RoadmapView = () => {
                 <p className="text-white font-medium">{roadmap.estimatedTimeToComplete}</p>
               </div>
             </div>
-            
             <div className="glass-card p-4 flex items-center">
               <div className="h-10 w-10 rounded-full bg-primary-900/30 flex items-center justify-center mr-3">
                 <Code className="h-5 w-5 text-primary-400" />
@@ -306,7 +346,6 @@ const RoadmapView = () => {
                 <p className="text-white font-medium">{roadmap.difficulty}</p>
               </div>
             </div>
-            
             <div className="glass-card p-4 flex items-center">
               <div className="h-10 w-10 rounded-full bg-primary-900/30 flex items-center justify-center mr-3">
                 <BookOpen className="h-5 w-5 text-primary-400" />
@@ -317,7 +356,6 @@ const RoadmapView = () => {
               </div>
             </div>
           </div>
-          
           <div className="mt-6 mb-8">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-400">Overall Progress</span>
@@ -331,7 +369,6 @@ const RoadmapView = () => {
             </div>
           </div>
         </div>
-        
         <div className="space-y-6">
           {roadmap.phases.map((phase) => (
             <motion.div 
@@ -385,7 +422,6 @@ const RoadmapView = () => {
                   </div>
                 </div>
               </div>
-              
               {expandedPhase === phase.id && (
                 <div className="p-6 border-t border-gray-800">
                   {phase.topics.map((topic, topicIndex) => (
@@ -411,7 +447,6 @@ const RoadmapView = () => {
                             <p className="text-gray-400 text-sm">{topic.description}</p>
                           </div>
                         </div>
-                        
                         {!topic.complete && (
                           <div className="flex items-center space-x-2">
                             {!topic.inProgress && (
@@ -433,7 +468,6 @@ const RoadmapView = () => {
                           </div>
                         )}
                       </div>
-                      
                       <div className="ml-8">
                         <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center">
                           <BookOpen className="h-4 w-4 mr-1 text-primary-400" />
@@ -446,7 +480,8 @@ const RoadmapView = () => {
                               href={resource.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center p-2 bg-gray-800/40 rounded hover:bg-gray-800 transition-colors"
+                              className="flex items-center p-2 bg-gray-800/40 rounded hover:bg-gray-800 transition-colors group"
+                              onClick={() => console.log(`Resource clicked: ${resource.name}`)}
                             >
                               <div className="w-8 h-8 rounded bg-gray-700 flex items-center justify-center mr-3">
                                 {resource.type === 'course' && <BookOpen className="h-4 w-4 text-primary-400" />}

@@ -33,6 +33,7 @@ const Navbar = () => {
     { name: 'Roadmap', path: '/roadmap/current', icon: <Map size={20} /> },
     { name: 'Resources', path: '/resources', icon: <BookOpen size={20} /> },
     { name: 'Check-ins', path: '/checkin', icon: <MessageSquare size={20} /> },
+    { name: 'Profile', path: '/profile', icon: <User size={20} /> },
   ];
 
   const handleLogout = async () => {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { doc, updateDoc, getFirestore } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 import { 
   Compass,
   BookOpen, 
@@ -110,6 +111,31 @@ const Onboarding = () => {
         onboardingCompleted: true,
         updatedAt: new Date().toISOString()
       });
+      
+      // Generate personalized roadmap using Groq AI
+      try {
+        const response = await axios.post('http://localhost:5000/api/roadmap/generate', {
+          educationLevel: formData.educationLevel,
+          interests: formData.interests,
+          skills: formData.skills,
+          goals: formData.goals,
+          userId: currentUser.uid
+        });
+        
+        if (response.data && response.data.success) {
+          console.log('Roadmap generated successfully:', response.data.roadmapId);
+          // Update user with assigned roadmap ID
+          await updateDoc(userRef, {
+            assignedRoadmapId: response.data.roadmapId
+          });
+        } else {
+          console.error('Error generating roadmap:', response.data);
+        }
+      } catch (aiError) {
+        console.error('Error calling AI service:', aiError);
+        // Continue to dashboard even if roadmap generation fails
+        // We can generate it later or use a default
+      }
       
       // Navigate to dashboard
       navigate('/dashboard');

@@ -12,6 +12,8 @@ import {
   ExternalLink 
 } from 'lucide-react';
 import Loading from '../../components/common/Loading';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { db } from '../../firebase.config';
 
 const Resources = () => {
   const [resources, setResources] = useState([]);
@@ -39,166 +41,179 @@ const Resources = () => {
   ];
 
   useEffect(() => {
-    // In a real app, this would be an API call
     const fetchResources = async () => {
       try {
         setLoading(true);
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Get resources from Firestore
+        const resourcesRef = collection(db, 'resources');
+        const resourcesSnap = await getDocs(resourcesRef);
         
-        // Mock resource data
-        const mockResources = [
-          {
-            id: 1,
-            title: 'React Fundamentals',
-            description: 'Learn the basics of React, from components to state management',
-            category: 'web_development',
-            type: 'course',
-            source: 'Frontend Masters',
-            url: '#',
-            isFree: false,
-            rating: 4.8,
-            tags: ['react', 'javascript', 'frontend']
-          },
-          {
-            id: 2,
-            title: 'Node.js API Development',
-            description: 'Build RESTful APIs with Node.js, Express, and MongoDB',
-            category: 'web_development',
-            type: 'tutorial',
-            source: 'freeCodeCamp',
-            url: '#',
-            isFree: true,
-            rating: 4.6,
-            tags: ['node', 'api', 'backend', 'express']
-          },
-          {
-            id: 3,
-            title: 'Machine Learning Crash Course',
-            description: 'A fast-paced introduction to machine learning fundamentals',
-            category: 'ai_ml',
-            type: 'course',
-            source: 'Google Developers',
-            url: '#',
-            isFree: true,
-            rating: 4.7,
-            tags: ['machine learning', 'python', 'data']
-          },
-          {
-            id: 4,
-            title: 'Modern CSS Techniques',
-            description: 'Learn advanced CSS including Flexbox, Grid, and CSS Variables',
-            category: 'web_development',
-            type: 'video',
-            source: 'CSS-Tricks',
-            url: '#',
-            isFree: true,
-            rating: 4.5,
-            tags: ['css', 'frontend', 'design']
-          },
-          {
-            id: 5,
-            title: 'UI/UX Design Principles',
-            description: 'Master the fundamentals of user interface and experience design',
-            category: 'design',
-            type: 'course',
-            source: 'Udemy',
-            url: '#',
-            isFree: false,
-            rating: 4.9,
-            tags: ['ui', 'ux', 'design']
-          },
-          {
-            id: 6,
-            title: 'Python for Data Science',
-            description: 'Learn Python libraries for data analysis and visualization',
-            category: 'data_science',
-            type: 'book',
-            source: 'O\'Reilly',
-            url: '#',
-            isFree: false,
-            rating: 4.7,
-            tags: ['python', 'data', 'pandas', 'numpy']
-          },
-          {
-            id: 7,
-            title: 'Flutter App Development',
-            description: 'Build cross-platform mobile apps with Flutter and Dart',
-            category: 'mobile_development',
-            type: 'tutorial',
-            source: 'Flutter Dev',
-            url: '#',
-            isFree: true,
-            rating: 4.6,
-            tags: ['flutter', 'dart', 'mobile']
-          },
-          {
-            id: 8,
-            title: 'React Native from Scratch',
-            description: 'Learn to build native mobile apps using React',
-            category: 'mobile_development',
-            type: 'course',
-            source: 'Udacity',
-            url: '#',
-            isFree: false,
-            rating: 4.5,
-            tags: ['react native', 'javascript', 'mobile']
-          },
-          {
-            id: 9,
-            title: 'TensorFlow Documentation',
-            description: 'Official documentation for the TensorFlow library',
-            category: 'ai_ml',
-            type: 'documentation',
-            source: 'TensorFlow',
-            url: '#',
-            isFree: true,
-            rating: 4.8,
-            tags: ['tensorflow', 'deep learning', 'ai']
-          },
-          {
-            id: 10,
-            title: 'Web Accessibility Guidelines',
-            description: 'Learn how to make your websites accessible to everyone',
-            category: 'web_development',
-            type: 'documentation',
-            source: 'W3C',
-            url: '#',
-            isFree: true,
-            rating: 4.7,
-            tags: ['accessibility', 'frontend', 'html']
-          },
-          {
-            id: 11,
-            title: 'Data Visualization with D3.js',
-            description: 'Create interactive data visualizations for the web',
-            category: 'data_science',
-            type: 'video',
-            source: 'YouTube',
-            url: '#',
-            isFree: true,
-            rating: 4.4,
-            tags: ['d3', 'javascript', 'visualization']
-          },
-          {
-            id: 12,
-            title: 'Figma for UI Design',
-            description: 'Master Figma for modern UI/UX design workflows',
-            category: 'design',
-            type: 'course',
-            source: 'Skillshare',
-            url: '#',
-            isFree: false,
-            rating: 4.9,
-            tags: ['figma', 'design', 'ui']
-          }
-        ];
+        // If no resources exist yet in Firestore, create mock data
+        if (resourcesSnap.empty) {
+          // Mock resource data
+          const mockResources = [
+            {
+              id: 1,
+              title: 'React Fundamentals',
+              description: 'Learn the basics of React, from components to state management',
+              category: 'web_development',
+              type: 'course',
+              source: 'Frontend Masters',
+              url: 'https://frontendmasters.com/courses/react-fundamentals/',
+              isFree: false,
+              rating: 4.8,
+              tags: ['react', 'javascript', 'frontend']
+            },
+            {
+              id: 2,
+              title: 'Node.js API Development',
+              description: 'Build RESTful APIs with Node.js, Express, and MongoDB',
+              category: 'web_development',
+              type: 'tutorial',
+              source: 'freeCodeCamp',
+              url: 'https://www.freecodecamp.org/learn/apis-and-microservices/',
+              isFree: true,
+              rating: 4.6,
+              tags: ['node', 'api', 'backend', 'express']
+            },
+            {
+              id: 3,
+              title: 'Machine Learning Crash Course',
+              description: 'A fast-paced introduction to machine learning fundamentals',
+              category: 'ai_ml',
+              type: 'course',
+              source: 'Google Developers',
+              url: 'https://developers.google.com/machine-learning/crash-course',
+              isFree: true,
+              rating: 4.7,
+              tags: ['machine learning', 'python', 'data']
+            },
+            {
+              id: 4,
+              title: 'Modern CSS Techniques',
+              description: 'Learn advanced CSS including Flexbox, Grid, and CSS Variables',
+              category: 'web_development',
+              type: 'video',
+              source: 'CSS-Tricks',
+              url: 'https://css-tricks.com/modern-css-techniques/',
+              isFree: true,
+              rating: 4.5,
+              tags: ['css', 'frontend', 'design']
+            },
+            {
+              id: 5,
+              title: 'UI/UX Design Principles',
+              description: 'Master the fundamentals of user interface and experience design',
+              category: 'design',
+              type: 'course',
+              source: 'Udemy',
+              url: 'https://www.udemy.com/course/ui-ux-design-principles/',
+              isFree: false,
+              rating: 4.9,
+              tags: ['ui', 'ux', 'design']
+            },
+            {
+              id: 6,
+              title: 'Python for Data Science',
+              description: 'Learn Python libraries for data analysis and visualization',
+              category: 'data_science',
+              type: 'book',
+              source: 'O\'Reilly',
+              url: 'https://www.oreilly.com/library/view/python-for-data/9781491957653/',
+              isFree: false,
+              rating: 4.7,
+              tags: ['python', 'data', 'pandas', 'numpy']
+            },
+            {
+              id: 7,
+              title: 'Flutter App Development',
+              description: 'Build cross-platform mobile apps with Flutter and Dart',
+              category: 'mobile_development',
+              type: 'tutorial',
+              source: 'Flutter Dev',
+              url: 'https://flutter.dev/docs/get-started/codelab',
+              isFree: true,
+              rating: 4.6,
+              tags: ['flutter', 'dart', 'mobile']
+            },
+            {
+              id: 8,
+              title: 'React Native from Scratch',
+              description: 'Learn to build native mobile apps using React',
+              category: 'mobile_development',
+              type: 'course',
+              source: 'Udacity',
+              url: 'https://www.udacity.com/course/react-native-from-scratch--ud902',
+              isFree: false,
+              rating: 4.5,
+              tags: ['react native', 'javascript', 'mobile']
+            },
+            {
+              id: 9,
+              title: 'TensorFlow Documentation',
+              description: 'Official documentation for the TensorFlow library',
+              category: 'ai_ml',
+              type: 'documentation',
+              source: 'TensorFlow',
+              url: 'https://www.tensorflow.org/docs',
+              isFree: true,
+              rating: 4.8,
+              tags: ['tensorflow', 'deep learning', 'ai']
+            },
+            {
+              id: 10,
+              title: 'Web Accessibility Guidelines',
+              description: 'Learn how to make your websites accessible to everyone',
+              category: 'web_development',
+              type: 'documentation',
+              source: 'W3C',
+              url: 'https://www.w3.org/WAI/fundamentals/accessibility-intro/',
+              isFree: true,
+              rating: 4.7,
+              tags: ['accessibility', 'frontend', 'html']
+            },
+            {
+              id: 11,
+              title: 'Data Visualization with D3.js',
+              description: 'Create interactive data visualizations for the web',
+              category: 'data_science',
+              type: 'video',
+              source: 'YouTube',
+              url: 'https://www.youtube.com/watch?v=8jvoTVvhDTM',
+              isFree: true,
+              rating: 4.4,
+              tags: ['d3', 'javascript', 'visualization']
+            },
+            {
+              id: 12,
+              title: 'Figma for UI Design',
+              description: 'Master Figma for modern UI/UX design workflows',
+              category: 'design',
+              type: 'course',
+              source: 'Skillshare',
+              url: 'https://www.skillshare.com/classes/Figma-for-UI-Design/1425515184',
+              isFree: false,
+              rating: 4.9,
+              tags: ['figma', 'design', 'ui']
+            }
+          ];
+          
+          // In a real implementation, we would add these to Firestore
+          // For now, we'll just use them directly
+          setResources(mockResources);
+        } else {
+          // Use the resources from Firestore
+          const resourcesData = resourcesSnap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setResources(resourcesData);
+        }
         
-        setResources(mockResources);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching resources:', error);
-      } finally {
         setLoading(false);
       }
     };
@@ -218,20 +233,27 @@ const Resources = () => {
   });
 
   const getResourceIcon = (type) => {
-    switch (type) {
+    switch(type) {
       case 'course':
-        return <BookOpen className="h-5 w-5" />;
+        return <BookOpen className="h-5 w-5 text-purple-400" />;
       case 'tutorial':
-        return <PenTool className="h-5 w-5" />;
+        return <Code className="h-5 w-5 text-blue-400" />;
       case 'documentation':
-        return <Code className="h-5 w-5" />;
+        return <BookOpen className="h-5 w-5 text-green-400" />;
       case 'book':
-        return <BookOpen className="h-5 w-5" />;
+        return <BookOpen className="h-5 w-5 text-yellow-400" />;
       case 'video':
-        return <Video className="h-5 w-5" />;
+        return <Video className="h-5 w-5 text-red-400" />;
       default:
-        return <BookOpen className="h-5 w-5" />;
+        return <BookOpen className="h-5 w-5 text-gray-400" />;
     }
+  };
+
+  // Function to handle resource click - could be used for analytics
+  const handleResourceClick = (resourceId) => {
+    // In a real app, you might want to track clicks or save to user history
+    console.log(`Resource clicked: ${resourceId}`);
+    // Could implement analytics tracking here
   };
 
   if (loading) {
@@ -384,6 +406,7 @@ const Resources = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary w-full justify-center"
+                  onClick={() => handleResourceClick(resource.id)}
                 >
                   <span>View Resource</span>
                   <ExternalLink className="h-4 w-4 ml-2" />

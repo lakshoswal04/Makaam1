@@ -14,6 +14,7 @@ const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'));
 const RoadmapView = lazy(() => import('./pages/roadmap/RoadmapView'));
 const Resources = lazy(() => import('./pages/resources/Resources'));
 const WeeklyCheckin = lazy(() => import('./pages/checkin/WeeklyCheckin'));
+const Profile = lazy(() => import('./pages/profile/Profile'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/roadmap/:id" element={<RoadmapView />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/checkin" element={<WeeklyCheckin />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />
