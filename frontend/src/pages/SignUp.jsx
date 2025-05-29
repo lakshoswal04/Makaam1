@@ -20,7 +20,7 @@ const SignUp = () => {
 
   // Redirect if already authenticated
   if (isAuthenticated && !loading) {
-    return <Navigate to="/" />
+    return <Navigate to="/dashboard" />
   }
 
   const handleChange = (e) => {

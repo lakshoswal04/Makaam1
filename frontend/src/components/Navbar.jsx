@@ -53,9 +53,10 @@ const Navbar = () => {
           </Link>
           
           <div className="hidden md:flex ml-10 space-x-8">
-            <a href="#features" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Features</a>
             {isAuthenticated && (
               <>
+                <Link to="/dashboard" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Dashboard</Link>
+                <Link to="/roadmap" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Roadmap</Link>
                 <Link to="/resources" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Resource Library</Link>
                 {isAdmin && (
                   <Link to="/admin" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Admin Dashboard</Link>
@@ -89,8 +90,11 @@ const Navbar = () => {
               
               {showProfileMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-dark-400 rounded-md shadow-lg py-1 z-50 border border-dark-300">
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                    My Profile
+                  <Link to="/dashboard" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
+                    Dashboard
+                  </Link>
+                  <Link to="/roadmap" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
+                    Roadmap
                   </Link>
                   <Link to="/resources" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
                     Resource Library
@@ -100,6 +104,9 @@ const Navbar = () => {
                       Admin Dashboard
                     </Link>
                   )}
+                  <Link to="/profile" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
+                    My Profile
+                  </Link>
                   <div className="border-t border-dark-300 my-1"></div>
                   <button 
                     onClick={logout}

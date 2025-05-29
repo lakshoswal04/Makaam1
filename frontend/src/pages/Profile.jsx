@@ -277,7 +277,7 @@ const Profile = () => {
       
       {/* AI Roadmap Section */}
       <div className="max-w-3xl mx-auto mt-8">
-        <AIRoadmap userProfile={userProfile} />
+        <AIRoadmap userProfile={userProfile} showActions={true} />
       </div>
     </div>
   );

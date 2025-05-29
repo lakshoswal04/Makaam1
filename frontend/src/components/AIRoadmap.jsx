@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaSpinner, FaRoad, FaBook, FaTools, FaBriefcase } from 'react-icons/fa';
 import { userService } from '../services/api';
 
-const AIRoadmap = ({ userProfile }) => {
+const AIRoadmap = ({ userProfile, showActions = false }) => {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -159,7 +159,7 @@ const AIRoadmap = ({ userProfile }) => {
           )}
         </div>
         <div className="flex gap-2">
-          {roadmap && (
+          {showActions && roadmap && (
             <button
               onClick={() => generateRoadmap(true)}
               disabled={loading}
@@ -168,18 +168,20 @@ const AIRoadmap = ({ userProfile }) => {
               Regenerate
             </button>
           )}
-          <button
-            onClick={() => generateRoadmap(false)}
-            disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md transition-all duration-200 flex items-center"
-          >
-            {loading ? (
-              <>
-                <FaSpinner className="animate-spin mr-2" />
-                {roadmap ? 'Updating...' : 'Generating...'}
-              </>
-            ) : roadmap ? 'Update Roadmap' : 'Generate Roadmap'}
-          </button>
+          {showActions && (
+            <button
+              onClick={() => generateRoadmap(false)}
+              disabled={loading}
+              className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md transition-all duration-200 flex items-center"
+            >
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin mr-2" />
+                  {roadmap ? 'Updating...' : 'Generating...'}
+                </>
+              ) : roadmap ? 'Update Roadmap' : 'Generate Roadmap'}
+            </button>
+          )}
         </div>
       </div>
       

@@ -7,6 +7,8 @@ import OnBoardingPage from './pages/OnBoardingPage'
 import ResourceLibrary from './pages/ResourceLibrary'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminProfile from './pages/AdminProfile'
+import Dashboard from './pages/Dashboard'
+import Roadmap from './pages/Roadmap'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -15,7 +17,7 @@ function App() {
     <Routes>
       <Route path="/" element={
         <ProtectedRoute>
-          <Home />
+          <Dashboard />
         </ProtectedRoute>
       } />
       <Route path="/profile" element={
@@ -43,6 +45,16 @@ function App() {
       <Route path="/admin/profile" element={
         <ProtectedRoute>
           <AdminProfile />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/roadmap" element={
+        <ProtectedRoute>
+          <Roadmap />
         </ProtectedRoute>
       } />
     </Routes>

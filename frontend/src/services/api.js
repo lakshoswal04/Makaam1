@@ -42,28 +42,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Add response interceptor to handle connection errors and try different ports
+// Add response interceptor to handle connection errors (no port cycling)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // Only retry for network errors or 5xx server errors
+    // Optionally, you can add a single retry for network/server errors
     const isNetworkError = !error.response;
     const isServerError = error.response && error.response.status >= 500;
-    
+
     if ((isNetworkError || isServerError) && error.config && !error.config._retry) {
       error.config._retry = true;
-      
-      // Try the next port
-      currentPortIndex = (currentPortIndex + 1) % BACKEND_PORTS.length;
-      console.log(`Trying next backend port: ${BACKEND_PORTS[currentPortIndex]}`);
-      
-      // Update the baseURL for the retry
-      error.config.baseURL = getApiUrl();
-      
-      // Retry the request
+      // Retry the request once
       return api(error.config);
     }
-    
+
     return Promise.reject(error);
   }
 );

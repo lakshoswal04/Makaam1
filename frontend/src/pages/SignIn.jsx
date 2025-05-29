@@ -15,7 +15,7 @@ const SignIn = () => {
   const [formError, setFormError] = useState('')
   
   // Get the page the user was trying to access
-  const from = location.state?.from || '/'
+  const from = '/dashboard';
 
   // Redirect if already authenticated
   if (isAuthenticated && !loading) {
@@ -44,7 +44,7 @@ const SignIn = () => {
         password: formData.password
       });
       setFormError('');
-      // Navigate to the page the user was trying to access or home page
+      // Navigate to the dashboard after login
       navigate(from);
     } catch (err) {
       setFormError(err.response?.data?.message || 'Login failed. Please check your credentials.');
