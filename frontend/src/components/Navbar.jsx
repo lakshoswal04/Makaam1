@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from './Logo'
 import { FaUser, FaChevronDown } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
   const { isAuthenticated, logout, userProfile, isAdmin } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -109,7 +111,7 @@ const Navbar = () => {
                   </Link>
                   <div className="border-t border-dark-300 my-1"></div>
                   <button 
-                    onClick={logout}
+                    onClick={() => { logout(); navigate('/'); }}
                     className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-dark-300"
                   >
                     Sign out
