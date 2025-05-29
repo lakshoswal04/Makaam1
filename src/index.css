@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: 139, 92, 246;    /* Purple */
+  --secondary: 20, 184, 166;  /* Teal */
+  --accent: 236, 72, 153;     /* Pink */
+  --success: 34, 197, 94;     /* Green */
+  --warning: 250, 204, 21;    /* Yellow */
+  --error: 239, 68, 68;       /* Red */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-gray-950 text-gray-100;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
+
+/* Common Components */
+@layer components {
+  .glass-card {
+    @apply bg-gray-900/70 backdrop-blur-lg border border-gray-800 rounded-xl shadow-lg;
+  }
+  
+  .btn-primary {
+    @apply px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg 
+    transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg 
+    transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white 
+    placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:-translate-y-1;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slideInUp 0.5s ease-out forwards;
+}
