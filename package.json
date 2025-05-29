@@ -1,44 +1,27 @@
 {
-  "name": "pathfinder",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
+  "name": "makaam",
+  "version": "1.0.0",
+  "description": "Makaam Learning Platform",
+  "main": "index.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "server": "node server/index.js",
-    "dev:all": "concurrently \"npm run dev\" \"npm run server\""
+    "start": "cd backend && npm start",
+    "build": "cd frontend && npm install && npm run build",
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "install": "npm run install-backend && npm run install-frontend",
+    "dev": "concurrently \"npm run start\" \"cd frontend && npm start\""
   },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "learning",
+    "career",
+    "roadmap"
+  ],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "firebase": "^10.5.2",
-    "framer-motion": "^10.16.4",
-    "groq": "^3.90.0",
-    "lucide-react": "^0.344.0",
-    "openai": "^4.14.2",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-firebase-hooks": "^5.1.1",
-    "react-router-dom": "^6.18.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.9.1",
-    "@types/react": "^18.3.5",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.18",
-    "concurrently": "^8.2.2",
-    "eslint": "^9.9.1",
-    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
-    "eslint-plugin-react-refresh": "^0.4.11",
-    "globals": "^15.9.0",
-    "postcss": "^8.4.35",
-    "tailwindcss": "^3.4.1",
-    "vite": "^5.4.2"
+    "concurrently": "^7.0.0"
   }
 }
