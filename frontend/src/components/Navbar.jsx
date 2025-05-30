@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Logo from './Logo'
-import { FaUser, FaChevronDown } from 'react-icons/fa'
+import { FaUser, FaChevronDown, FaSignOutAlt } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const Navbar = () => {
   const { isAuthenticated, logout, userProfile, isAdmin } = useAuth()
@@ -30,7 +31,6 @@ const Navbar = () => {
     setShowProfileMenu(!showProfileMenu)
   }
 
-  // Close profile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showProfileMenu && !event.target.closest('.profile-menu-container')) {
@@ -45,11 +45,20 @@ const Navbar = () => {
   }, [showProfileMenu])
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      isScrolled ? 'bg-dark-500/90 backdrop-blur-md py-3 shadow-md' : 'bg-dark-500 py-3'
-    }`}>
+    <motion.nav 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-dark-500/90 backdrop-blur-md py-3 shadow-lg' : 'bg-transparent py-4'
+      }`}
+    >
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-        <div className="flex items-center">
+        <motion.div 
+          className="flex items-center"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <Link to="/" className="flex items-center">
             <Logo className="h-9 w-auto" />
           </Link>
@@ -57,25 +66,31 @@ const Navbar = () => {
           <div className="hidden md:flex ml-10 space-x-8">
             {isAuthenticated && (
               <>
-                <Link to="/dashboard" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Dashboard</Link>
-                <Link to="/roadmap" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Roadmap</Link>
-                <Link to="/resources" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Resource Library</Link>
+                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink to="/roadmap">Roadmap</NavLink>
+                <NavLink to="/weekly-checkin">Weekly Check-in</NavLink>
+                <NavLink to="/resources">Resource Library</NavLink>
                 {isAdmin && (
-                  <Link to="/admin" className="text-gray-300 hover:text-purple-500 transition-colors duration-200">Admin Dashboard</Link>
+                  <NavLink to="/admin">Admin Dashboard</NavLink>
                 )}
               </>
             )}
           </div>
-        </div>
+        </motion.div>
         
-        <div className="flex items-center gap-3">
+        <motion.div 
+          className="flex items-center gap-3"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           {isAuthenticated ? (
             <div className="relative profile-menu-container">
               <button 
                 onClick={toggleProfileMenu}
-                className="flex items-center gap-2 bg-dark-400 hover:bg-dark-300 py-2 px-3 rounded-md transition-all duration-200"
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 py-2 px-3 rounded-lg transition-all duration-200 backdrop-blur-sm"
               >
-                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white shadow-lg">
                   {userProfile?.firstName ? (
                     <span className="text-sm font-bold">
                       {userProfile.firstName.charAt(0)}{userProfile.lastName ? userProfile.lastName.charAt(0) : ''}
@@ -84,55 +99,73 @@ const Navbar = () => {
                     <FaUser size={14} />
                   )}
                 </div>
-                <span className="hidden md:inline">
+                <span className="hidden md:inline text-white">
                   {userProfile?.firstName ? userProfile.firstName : 'Profile'}
                 </span>
-                <FaChevronDown size={12} className={`transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+                <FaChevronDown size={12} className={`text-white transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
               </button>
               
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-dark-400 rounded-md shadow-lg py-1 z-50 border border-dark-300">
-                  <Link to="/dashboard" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                    Dashboard
-                  </Link>
-                  <Link to="/roadmap" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                    Roadmap
-                  </Link>
-                  <Link to="/resources" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                    Resource Library
-                  </Link>
-                  {isAdmin && (
-                    <Link to="/admin" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                      Admin Dashboard
-                    </Link>
-                  )}
-                  <Link to="/profile" className="block px-4 py-2 text-sm text-white hover:bg-dark-300">
-                    My Profile
-                  </Link>
-                  <div className="border-t border-dark-300 my-1"></div>
-                  <button 
-                    onClick={() => { logout(); navigate('/'); }}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-dark-300"
+              <AnimatePresence>
+                {showProfileMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 mt-2 w-48 bg-white/10 backdrop-blur-md rounded-xl shadow-xl py-1 z-50 border border-white/10"
                   >
-                    Sign out
-                  </button>
-                </div>
-              )}
+                    <ProfileMenuItem to="/dashboard">Dashboard</ProfileMenuItem>
+                    <ProfileMenuItem to="/roadmap">Roadmap</ProfileMenuItem>
+                    <ProfileMenuItem to="/weekly-checkin">Weekly Check-in</ProfileMenuItem>
+                    <ProfileMenuItem to="/resources">Resource Library</ProfileMenuItem>
+                    {isAdmin && (
+                      <ProfileMenuItem to="/admin">Admin Dashboard</ProfileMenuItem>
+                    )}
+                    <ProfileMenuItem to="/profile">My Profile</ProfileMenuItem>
+                    <div className="border-t border-white/10 my-1"></div>
+                    <button 
+                      onClick={() => { logout(); navigate('/'); }}
+                      className="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:bg-white/10 transition-colors"
+                    >
+                      <FaSignOutAlt className="mr-2" />
+                      Sign out
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             <>
-              <Link to="/signin" className="bg-transparent border border-purple-600 text-purple-500 hover:bg-purple-600/10 py-2 px-4 rounded-md transition-all duration-200 font-medium">
+              <Link to="/signin" className="bg-transparent border border-purple-600 text-purple-500 hover:bg-purple-600/10 py-2 px-4 rounded-lg transition-all duration-200 font-medium">
                 Log in
               </Link>
-              <Link to="/signup" className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-md transition-all duration-200 font-medium">
+              <Link to="/signup" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-4 rounded-lg transition-all duration-200 font-medium shadow-lg shadow-purple-600/20">
                 Sign up
               </Link>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
-    </nav>
+    </motion.nav>
   )
 }
+
+const NavLink = ({ to, children }) => (
+  <Link 
+    to={to} 
+    className="text-gray-300 hover:text-purple-500 transition-colors duration-200 relative group"
+  >
+    {children}
+    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-500 transition-all duration-200 group-hover:w-full"></span>
+  </Link>
+)
+
+const ProfileMenuItem = ({ to, children }) => (
+  <Link 
+    to={to} 
+    className="flex items-center px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors"
+  >
+    {children}
+  </Link>
+)
 
 export default Navbar

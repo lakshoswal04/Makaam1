@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminProfile from './pages/AdminProfile'
 import Dashboard from './pages/Dashboard'
 import Roadmap from './pages/Roadmap'
+import WeeklyCheckin from './pages/WeeklyCheckin'
 
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -51,6 +52,11 @@ function App() {
       <Route path="/roadmap" element={
         <ProtectedRoute>
           <Roadmap />
+        </ProtectedRoute>
+      } />
+      <Route path="/weekly-checkin" element={
+        <ProtectedRoute>
+          <WeeklyCheckin />
         </ProtectedRoute>
       } />
     </Routes>

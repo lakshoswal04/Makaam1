@@ -79,7 +79,13 @@ export const AuthProvider = ({ children }) => {
         // Fetch user profile after successful login
         const profileData = await fetchUserProfile();
         if (profileData) {
-          showToast('Welcome back! You have successfully signed in.', 'success', 5000);
+          // Show welcome message only if not first login
+          const hasLoggedInBefore = localStorage.getItem('hasLoggedInBefore');
+          if (hasLoggedInBefore) {
+            showToast('Welcome back! You have successfully signed in.', 'success', 5000);
+          } else {
+            localStorage.setItem('hasLoggedInBefore', 'true');
+          }
         } else {
           showToast('Login successful, but unable to load profile. Please try again.', 'warning', 5000);
         }

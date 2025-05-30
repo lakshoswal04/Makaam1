@@ -5,10 +5,17 @@ import { Link } from 'react-router-dom';
 import ResourceGrid from '../components/ResourceGrid';
 import ResourceFilter from '../components/ResourceFilter';
 import { getAllResources, getResourcesByDomain, getResourcesByType, getResourcesByPremiumStatus } from '../services/resourceService';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { motion } from 'framer-motion';
+import { FaArrowLeft, FaSearch, FaFilter, FaVideo, FaLink } from 'react-icons/fa';
 
 const ResourceLibrary = () => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isAuthenticated, loading } = useAuth();
+  const navigate = useNavigate();
   const [resources, setResources] = useState([]);
+  const [filteredResources, setFilteredResources] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [filters, setFilters] = useState({
@@ -17,146 +24,207 @@ const ResourceLibrary = () => {
     isPremium: null
   });
 
-  const fetchResources = async () => {
-    setIsLoading(true);
-    setError('');
-    
-    try {
-      let data;
-      
-      // Apply filters
-      if (filters.domain) {
-        data = await getResourcesByDomain(filters.domain);
-      } else if (filters.type) {
-        data = await getResourcesByType(filters.type);
-      } else if (filters.isPremium !== null) {
-        data = await getResourcesByPremiumStatus(filters.isPremium);
-      } else {
-        data = await getAllResources();
-      }
-      
-      setResources(data.data || []);
-    } catch (err) {
-      console.error('Error fetching resources:', err);
-      setError('Failed to load resources. Please try again later.');
-      setResources([]);
-    } finally {
-      setIsLoading(false);
+  // Resource types for filtering
+  const resourceTypes = [
+    'Course',
+    'Blog',
+    'GitHub Repository',
+    'Video',
+    'Book',
+    'Tool',
+    'Other'
+  ];
+
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      navigate('/signin');
     }
+  }, [isAuthenticated, loading, navigate]);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      setIsLoading(true);
+      setError('');
+      
+      try {
+        let data;
+        
+        // Apply filters
+        if (filters.domain) {
+          data = await getResourcesByDomain(filters.domain);
+        } else if (filters.type) {
+          data = await getResourcesByType(filters.type);
+        } else if (filters.isPremium !== null) {
+          data = await getResourcesByPremiumStatus(filters.isPremium);
+        } else {
+          data = await getAllResources();
+        }
+        
+        setResources(data.data || []);
+        setFilteredResources(data.data || []);
+      } catch (err) {
+        console.error('Error fetching resources:', err);
+        setError('Failed to load resources. Please try again later.');
+        setResources([]);
+        setFilteredResources([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isAuthenticated) fetchResources();
+  }, [isAuthenticated, filters]);
+
+  useEffect(() => {
+    let filtered = resources;
+    if (searchQuery) {
+      filtered = filtered.filter(resource =>
+        resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    setFilteredResources(filtered);
+  }, [searchQuery, resources]);
+
+  const handleTypeFilter = (type) => {
+    setFilters((prev) => ({ ...prev, type: type === 'all' ? null : type }));
   };
 
-  useEffect(() => {
-    fetchResources();
-  }, [filters]);
-
-
-
-  // Sample data for initial development (remove in production)
-  useEffect(() => {
-    // This is just for demonstration when no backend is available
-    if (resources.length === 0 && !isLoading) {
-      const sampleResources = [
-        {
-          _id: '1',
-          title: 'React Documentation',
-          description: 'The official React documentation with tutorials, guides, and API reference.',
-          url: 'https://reactjs.org/docs/getting-started.html',
-          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png',
-          domain: 'Web Development',
-          type: 'Documentation',
-          isPremium: false,
-          tags: ['react', 'javascript', 'frontend']
-        },
-        {
-          _id: '2',
-          title: 'Figma Design Course',
-          description: 'Comprehensive course on UI/UX design using Figma, from basics to advanced techniques.',
-          url: 'https://www.figma.com/resources/learn-design/',
-          imageUrl: 'https://cdn.sanity.io/images/599r6htc/localized/46a76c802176eb17b04e12108de7e7e0f3736dc6-1108x1108.png',
-          domain: 'Design',
-          type: 'Course',
-          isPremium: true,
-          tags: ['figma', 'ui', 'ux', 'design']
-        },
-        {
-          _id: '3',
-          title: 'TensorFlow Tutorials',
-          description: 'Learn machine learning with TensorFlow through practical examples and tutorials.',
-          url: 'https://www.tensorflow.org/tutorials',
-          imageUrl: 'https://www.tensorflow.org/site-assets/images/project-logos/tensorflow-logo-social.png',
-          domain: 'Data Science',
-          type: 'Tutorial',
-          isPremium: false,
-          tags: ['tensorflow', 'machine learning', 'python']
-        },
-        {
-          _id: '4',
-          title: 'GitHub - Awesome Python',
-          description: 'A curated list of awesome Python frameworks, libraries, software and resources.',
-          url: 'https://github.com/vinta/awesome-python',
-          imageUrl: '',
-          domain: 'Web Development',
-          type: 'GitHub Repository',
-          isPremium: false,
-          tags: ['python', 'resources', 'libraries']
-        },
-        {
-          _id: '5',
-          title: 'AWS Certified Solutions Architect',
-          description: 'Comprehensive course to prepare for the AWS Certified Solutions Architect exam.',
-          url: 'https://aws.amazon.com/certification/certified-solutions-architect-associate/',
-          imageUrl: 'https://d1.awsstatic.com/training-and-certification/certification-badges/AWS-Certified-Solutions-Architect-Associate_badge.3419559c682629072f1eb968d59dea0741772c0f.png',
-          domain: 'DevOps',
-          type: 'Course',
-          isPremium: true,
-          tags: ['aws', 'cloud', 'certification']
-        },
-        {
-          _id: '6',
-          title: 'Flutter Documentation',
-          description: 'Official documentation for Flutter, Google\'s UI toolkit for building beautiful, natively compiled applications.',
-          url: 'https://flutter.dev/docs',
-          imageUrl: 'https://storage.googleapis.com/cms-storage-bucket/70760bf1e88b184bb1bc.png',
-          domain: 'Mobile Development',
-          type: 'Documentation',
-          isPremium: false,
-          tags: ['flutter', 'dart', 'mobile']
-        }
-      ];
-      
-      setResources(sampleResources);
-    }
-  }, [resources, isLoading]);
+  if (loading || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-blue-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div className="flex items-center mb-4 md:mb-0">
-          <FaBook className="text-blue-500 text-2xl mr-3" />
-          <h1 className="text-2xl font-bold text-gray-800">Resource Library</h1>
-        </div>
-        
-        {isAdmin && (
-          <Link 
-            to="/admin"
-            className="flex items-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-blue-950 pt-20 pb-10">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between mb-8"
+        >
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-200"
           >
-            <FaExternalLinkAlt className="mr-2" /> Manage Resources
-          </Link>
+            <FaArrowLeft />
+            Back to Dashboard
+          </button>
+          <h1 className="text-3xl font-bold text-white">Resource Library</h1>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10 mb-8"
+        >
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => handleTypeFilter('all')}
+                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                  !filters.type
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:text-white'
+                }`}
+              >
+                All
+              </button>
+              {resourceTypes.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => handleTypeFilter(type)}
+                  className={`px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                    filters.type === type
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-white/5 text-gray-400 hover:text-white'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredResources.map((resource, index) => (
+            <motion.div
+              key={resource._id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden border border-white/10 hover:border-purple-500/50 transition-all duration-300 group"
+            >
+              <div className="aspect-video relative overflow-hidden">
+                <img
+                  src={resource.image || 'https://placehold.co/600x400/252945/FFFFFF/png?text=Resource'}
+                  alt={resource.title}
+                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-4">
+                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-purple-600 text-white">
+                    {resource.type.charAt(0).toUpperCase() + resource.type.slice(1)}
+                  </span>
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-purple-400 transition-colors duration-200">
+                  {resource.title}
+                </h3>
+                <p className="text-gray-400 mb-4 line-clamp-2">{resource.description}</p>
+                <a
+                  href={resource.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                >
+                  View Resource
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {filteredResources.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p className="text-gray-400 text-lg">No resources found matching your criteria.</p>
+          </motion.div>
         )}
       </div>
-      
-      {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-md mb-6">
-          {error}
-        </div>
-      )}
-      
-
-      
-      <ResourceFilter filters={filters} setFilters={setFilters} />
-      
-      <ResourceGrid resources={resources} isLoading={isLoading} />
     </div>
   );
 };

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api, { userService } from '../services/api';
 import { useToast } from '../context/ToastContext';
+import { motion } from 'framer-motion';
+import { FaGraduationCap, FaStar, FaCogs, FaArrowLeft, FaArrowRight, FaCheck } from 'react-icons/fa';
 
 const educationLevels = [
   'High School',
@@ -115,104 +117,141 @@ const OnBoarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-500 pt-20 pb-10">
-      <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-dark-400 rounded-lg shadow-lg p-6 md:p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold">Complete Your Profile</h1>
-            <div className="text-sm text-gray-400">
-              Step {step} of 4
-            </div>
-          </div>
-
-          {step === 1 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">What is your education level?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {educationLevels.map((level) => (
-                  <button
-                    key={level}
-                    className={`p-3 rounded-md border ${formData.educationLevel === level ? 'border-purple-500 bg-purple-500/10' : 'border-dark-300 hover:border-purple-500/50'}`}
-                    onClick={() => setFormData(prev => ({ ...prev, educationLevel: level }))}
-                  >
-                    {level}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">Select your areas of interest</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {interestAreas.map((interest) => (
-                  <button
-                    key={interest}
-                    className={`p-3 rounded-md border ${formData.interests.includes(interest) ? 'border-purple-500 bg-purple-500/10' : 'border-dark-300 hover:border-purple-500/50'}`}
-                    onClick={() => handleInterestToggle(interest)}
-                  >
-                    {interest}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">What skills do you currently have?</h2>
-              <textarea
-                className="w-full bg-dark-300 border border-dark-200 rounded-md p-3 min-h-[150px]"
-                placeholder="List your technical and soft skills..."
-                value={formData.skills}
-                onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
-              />
-            </div>
-          )}
-
-          {step === 4 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">What are your career goals?</h2>
-              <textarea
-                className="w-full bg-dark-300 border border-dark-200 rounded-md p-3 min-h-[150px]"
-                placeholder="Describe your short-term and long-term career goals..."
-                value={formData.careerGoals}
-                onChange={(e) => setFormData(prev => ({ ...prev, careerGoals: e.target.value }))}
-              />
-            </div>
-          )}
-
-          <div className="flex justify-between mt-8">
-            {step > 1 && (
-              <button
-                onClick={handleBack}
-                disabled={isSubmitting}
-                className="px-6 py-2 border border-dark-300 rounded-md hover:bg-dark-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Back
-              </button>
-            )}
-            <button
-              onClick={step < 4 ? handleNext : handleSubmit}
-              disabled={isSubmitting}
-              className="ml-auto px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center"
-            >
-              {isSubmitting && step === 4 ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Saving...
-                </>
-              ) : (
-                step < 4 ? 'Next' : 'Complete'
-              )}
-            </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-950 to-blue-950 pt-20 pb-10 flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-2xl bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10 shadow-xl"
+      >
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+            {step === 1 && <FaGraduationCap className="text-purple-400" />} 
+            {step === 2 && <FaCogs className="text-purple-400" />} 
+            {step === 3 && <FaCogs className="text-purple-400" />} 
+            {step === 4 && <FaStar className="text-purple-400" />} 
+            Complete Your Profile
+          </h1>
+          <div className="text-sm text-gray-400">
+            Step {step} of 4
           </div>
         </div>
-      </div>
+
+        {step === 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2"><FaGraduationCap /> What is your education level?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {educationLevels.map((level) => (
+                <button
+                  key={level}
+                  className={`p-3 rounded-lg border transition-all duration-200 text-white font-medium ${formData.educationLevel === level ? 'border-purple-500 bg-purple-600/20 shadow-lg scale-105' : 'border-white/10 hover:border-purple-500/50 bg-white/5'}`}
+                  onClick={() => setFormData(prev => ({ ...prev, educationLevel: level }))}
+                  type="button"
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 2 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2"><FaCogs /> Select your areas of interest</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {interestAreas.map((interest) => (
+                <button
+                  key={interest}
+                  className={`p-3 rounded-lg border transition-all duration-200 text-white font-medium ${formData.interests.includes(interest) ? 'border-purple-500 bg-purple-600/20 shadow-lg scale-105' : 'border-white/10 hover:border-purple-500/50 bg-white/5'}`}
+                  onClick={() => handleInterestToggle(interest)}
+                  type="button"
+                >
+                  {interest}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {step === 3 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2"><FaCogs /> What skills do you currently have?</h2>
+            <textarea
+              className="w-full bg-white/10 border border-white/10 rounded-lg p-4 min-h-[120px] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="List your technical and soft skills..."
+              value={formData.skills}
+              onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+            />
+          </motion.div>
+        )}
+
+        {step === 4 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold mb-4 text-white flex items-center gap-2"><FaStar /> What are your career goals?</h2>
+            <textarea
+              className="w-full bg-white/10 border border-white/10 rounded-lg p-4 min-h-[120px] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Describe your short-term and long-term career goals..."
+              value={formData.careerGoals}
+              onChange={(e) => setFormData(prev => ({ ...prev, careerGoals: e.target.value }))}
+            />
+          </motion.div>
+        )}
+
+        <div className="flex justify-between mt-8">
+          {step > 1 && (
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={handleBack}
+              disabled={isSubmitting}
+              className="px-6 py-2 border border-white/10 rounded-lg bg-white/5 text-white hover:bg-purple-600/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <FaArrowLeft /> Back
+            </motion.button>
+          )}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={step < 4 ? handleNext : handleSubmit}
+            disabled={isSubmitting}
+            className="ml-auto px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-lg shadow-purple-600/20 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? (
+              <>
+                <FaCheck className="animate-spin" /> Submitting...
+              </>
+            ) : step < 4 ? (
+              <>
+                Next <FaArrowRight />
+              </>
+            ) : (
+              <>
+                <FaCheck /> Finish
+              </>
+            )}
+          </motion.button>
+        </div>
+      </motion.div>
     </div>
   );
 };

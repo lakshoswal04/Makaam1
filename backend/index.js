@@ -11,6 +11,7 @@ const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const resourceRoutes = require("./routes/resources");
 const roadmapRoutes = require("./routes/roadmap");
+const checkinsRoute = require('./routes/checkins');
 
 // database connection
 connection();
@@ -38,6 +39,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/roadmap", roadmapRoutes);
+app.use('/api/checkins', checkinsRoute);
 
 // Health check route - must be after API routes
 app.get('/health', (req, res) => {

@@ -1,20 +1,9 @@
-import axios from 'axios';
 import api from './api';
-
-const API_URL = 'http://localhost:5000/api';
-
-// Helper function to get auth token
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return token ? { 'x-auth-token': token } : {};
-};
 
 // Get all resources
 export const getAllResources = async () => {
   try {
-    const response = await axios.get(`${API_URL}/resources`, {
-      headers: getAuthHeader()
-    });
+    const response = await api.get('/resources');
     return response.data;
   } catch (error) {
     console.error('Error fetching resources:', error);
@@ -25,9 +14,7 @@ export const getAllResources = async () => {
 // Get resources by domain
 export const getResourcesByDomain = async (domain) => {
   try {
-    const response = await axios.get(`${API_URL}/resources/domain/${domain}`, {
-      headers: getAuthHeader()
-    });
+    const response = await api.get(`/resources/domain/${domain}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching resources for domain ${domain}:`, error);
@@ -38,9 +25,7 @@ export const getResourcesByDomain = async (domain) => {
 // Get resources by type
 export const getResourcesByType = async (type) => {
   try {
-    const response = await axios.get(`${API_URL}/resources/type/${type}`, {
-      headers: getAuthHeader()
-    });
+    const response = await api.get(`/resources/type/${type}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching resources for type ${type}:`, error);
@@ -51,9 +36,7 @@ export const getResourcesByType = async (type) => {
 // Get free or premium resources
 export const getResourcesByPremiumStatus = async (isPremium) => {
   try {
-    const response = await axios.get(`${API_URL}/resources/premium/${isPremium}`, {
-      headers: getAuthHeader()
-    });
+    const response = await api.get(`/resources/premium/${isPremium}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching ${isPremium ? 'premium' : 'free'} resources:`, error);
@@ -64,9 +47,7 @@ export const getResourcesByPremiumStatus = async (isPremium) => {
 // Create a new resource (admin only)
 export const createResource = async (resourceData) => {
   try {
-    const response = await axios.post(`${API_URL}/resources`, resourceData, {
-      headers: getAuthHeader()
-    });
+    const response = await api.post('/resources', resourceData);
     return response.data;
   } catch (error) {
     console.error('Error creating resource:', error);
@@ -80,9 +61,7 @@ export const createResource = async (resourceData) => {
 // Update a resource (admin only)
 export const updateResource = async (id, resourceData) => {
   try {
-    const response = await axios.put(`${API_URL}/resources/${id}`, resourceData, {
-      headers: getAuthHeader()
-    });
+    const response = await api.put(`/resources/${id}`, resourceData);
     return response.data;
   } catch (error) {
     console.error(`Error updating resource with id ${id}:`, error);
@@ -96,9 +75,7 @@ export const updateResource = async (id, resourceData) => {
 // Delete a resource (admin only)
 export const deleteResource = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/resources/${id}`, {
-      headers: getAuthHeader()
-    });
+    const response = await api.delete(`/resources/${id}`);
     return response.data;
   } catch (error) {
     console.error(`Error deleting resource with id ${id}:`, error);

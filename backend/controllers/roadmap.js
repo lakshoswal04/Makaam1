@@ -211,31 +211,15 @@ For each phase, include:
 - 2-3 suggested projects or exercises
 - 1-3 helpful resources (books, courses, websites) with links when possible
 
-Format your response as a structured JSON object with these exact keys:
-{
-  "learn": {
-    "title": "Phase 1: Learn",
-    "description": "...",
-    "topics": ["...", "...", "..."],
-    "tools": ["...", "...", "..."],
-    "projects": ["...", "...", "..."],
-    "resources": [
-      {"title": "...", "url": "..."},
-      {"title": "...", "url": "..."}
-    ]
-  },
-  "practice": {
-    // Similar structure
-  },
-  "build": {
-    // Similar structure
-  },
-  "apply": {
-    // Similar structure
-  }
-}
+RESPONSE INSTRUCTIONS:
+- ONLY return a valid, minified JSON object (no markdown, no comments, no extra text, no trailing commas, no code block, no explanation).
+- Do NOT include any text before or after the JSON.
+- The JSON must have these exact keys: learn, practice, build, apply.
+- Each phase must have: title, description, topics, tools, projects, resources.
+- All arrays must be valid JSON arrays.
 
-Make sure your response is ONLY the JSON object, with no additional text before or after.
+EXAMPLE FORMAT:
+{"learn":{"title":"Phase 1: Learn","description":"...","topics":["...","..."],"tools":["..."],"projects":["..."],"resources":[{"title":"...","url":"..."}]},"practice":{...},"build":{...},"apply":{...}}
 `;
 };
 
