@@ -42,35 +42,35 @@ const ResourceLibrary = () => {
   }, [isAuthenticated, loading, navigate]);
 
   useEffect(() => {
-    const fetchResources = async () => {
-      setIsLoading(true);
-      setError('');
+  const fetchResources = async () => {
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      let data;
       
-      try {
-        let data;
-        
-        // Apply filters
-        if (filters.domain) {
-          data = await getResourcesByDomain(filters.domain);
-        } else if (filters.type) {
-          data = await getResourcesByType(filters.type);
-        } else if (filters.isPremium !== null) {
-          data = await getResourcesByPremiumStatus(filters.isPremium);
-        } else {
-          data = await getAllResources();
-        }
-        
-        setResources(data.data || []);
-        setFilteredResources(data.data || []);
-      } catch (err) {
-        console.error('Error fetching resources:', err);
-        setError('Failed to load resources. Please try again later.');
-        setResources([]);
-        setFilteredResources([]);
-      } finally {
-        setIsLoading(false);
+      // Apply filters
+      if (filters.domain) {
+        data = await getResourcesByDomain(filters.domain);
+      } else if (filters.type) {
+        data = await getResourcesByType(filters.type);
+      } else if (filters.isPremium !== null) {
+        data = await getResourcesByPremiumStatus(filters.isPremium);
+      } else {
+        data = await getAllResources();
       }
-    };
+      
+      setResources(data.data || []);
+        setFilteredResources(data.data || []);
+    } catch (err) {
+      console.error('Error fetching resources:', err);
+      setError('Failed to load resources. Please try again later.');
+      setResources([]);
+        setFilteredResources([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
     if (isAuthenticated) fetchResources();
   }, [isAuthenticated, filters]);
@@ -214,7 +214,7 @@ const ResourceLibrary = () => {
             </motion.div>
           ))}
         </div>
-
+        
         {filteredResources.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}

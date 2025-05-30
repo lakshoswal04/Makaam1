@@ -11,6 +11,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [streak, setStreak] = useState(0);
   const [achievements, setAchievements] = useState([]);
+  const [completedItems, setCompletedItems] = useState({});
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -42,6 +43,20 @@ const Dashboard = () => {
       }
     };
     if (isAuthenticated) fetchStreak();
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const fetchCompletedItems = async () => {
+      try {
+        const res = await axios.get('/api/checkins/completed', {
+          headers: { 'x-auth-token': localStorage.getItem('token') }
+        });
+        setCompletedItems(res.data.completedItems || {});
+      } catch (err) {
+        console.error('Failed to fetch completed items:', err);
+      }
+    };
+    if (isAuthenticated) fetchCompletedItems();
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -83,7 +98,7 @@ const Dashboard = () => {
           >
             <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-6 mb-6 border border-white/10">
               <h2 className="text-xl font-semibold mb-2 text-purple-400">Current Roadmap</h2>
-              <AIRoadmap userProfile={userProfile} />
+              <AIRoadmap userProfile={userProfile} completedItems={completedItems} />
             </div>
           </motion.div>
           <motion.div

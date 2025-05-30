@@ -5,6 +5,35 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaCheck, FaSpinner } from 'react-icons/fa';
 
+// Helper to flatten roadmap items
+const getAllRoadmapItems = (roadmap) => {
+  if (!roadmap) return [];
+  const phases = ['learn', 'practice', 'build', 'apply'];
+  let items = [];
+  phases.forEach(phase => {
+    if (roadmap[phase]) {
+      if (Array.isArray(roadmap[phase].topics)) {
+        items = items.concat(roadmap[phase].topics.map(topic => ({ phase, type: 'topic', value: topic })));
+      }
+      if (Array.isArray(roadmap[phase].projects)) {
+        items = items.concat(roadmap[phase].projects.map(project => ({ phase, type: 'project', value: project })));
+      }
+    }
+  });
+  return items;
+};
+
+const getPhaseProgress = (phase, completedItems, roadmap) => {
+  if (!roadmap?.[phase]) return 0;
+  const phaseItems = [
+    ...(roadmap[phase].topics || []),
+    ...(roadmap[phase].projects || [])
+  ];
+  if (phaseItems.length === 0) return 0;
+  const completed = phaseItems.filter(item => completedItems.includes(item)).length;
+  return Math.round((completed / phaseItems.length) * 100);
+};
+
 const WeeklyCheckin = () => {
   const { userProfile, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
@@ -15,6 +44,7 @@ const WeeklyCheckin = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const allRoadmapItems = getAllRoadmapItems(userProfile?.roadmap);
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -59,17 +89,15 @@ const WeeklyCheckin = () => {
     }
   }, [isAuthenticated]);
 
-  const toggleRoadmapItem = (item) => {
+  const toggleRoadmapItem = (itemValue) => {
     setCompletedItems(prev => {
-      const newItems = prev.includes(item)
-        ? prev.filter(i => i !== item)
-        : [...prev, item];
-      
+      const newItems = prev.includes(itemValue)
+        ? prev.filter(i => i !== itemValue)
+        : [...prev, itemValue];
       // Calculate progress based on completed items
-      const totalItems = userProfile?.roadmap?.length || 0;
+      const totalItems = allRoadmapItems.length;
       const newProgress = totalItems > 0 ? (newItems.length / totalItems) * 100 : 0;
       setProgress(newProgress);
-      
       return newItems;
     });
   };
@@ -187,23 +215,49 @@ const WeeklyCheckin = () => {
 
             <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-white/10">
               <h2 className="text-2xl font-bold text-white mb-4">Roadmap Progress</h2>
-              <div className="space-y-4">
-                {(Array.isArray(userProfile?.roadmap) ? userProfile.roadmap : []).map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex items-center gap-3 p-3 bg-white/5 rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors duration-200"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={completedItems.includes(item)}
-                      onChange={() => toggleRoadmapItem(item)}
-                      className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500"
-                    />
-                    <span className="text-white">{item}</span>
-                  </motion.div>
+              <div className="space-y-6">
+                {['learn', 'practice', 'build', 'apply'].map(phase => (
+                  userProfile?.roadmap?.[phase] && (
+                    <div key={phase}>
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-lg font-semibold text-purple-400 capitalize">{phase}</h3>
+                        <span className="text-sm text-purple-300">{getPhaseProgress(phase, completedItems, userProfile.roadmap)}%</span>
+                      </div>
+                      <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-purple-200/10">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${getPhaseProgress(phase, completedItems, userProfile.roadmap)}%` }}
+                          transition={{ duration: 1, ease: 'easeOut' }}
+                          className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-purple-600 to-blue-600"
+                          style={{ width: `${getPhaseProgress(phase, completedItems, userProfile.roadmap)}%` }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        {userProfile.roadmap[phase].topics && userProfile.roadmap[phase].topics.map((topic, idx) => (
+                          <div key={phase + '-topic-' + idx} className="flex items-center gap-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                            <input
+                              type="checkbox"
+                              checked={completedItems.includes(topic)}
+                              onChange={() => toggleRoadmapItem(topic)}
+                              className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500"
+                            />
+                            <span className="text-white">{topic}</span>
+                          </div>
+                        ))}
+                        {userProfile.roadmap[phase].projects && userProfile.roadmap[phase].projects.map((project, idx) => (
+                          <div key={phase + '-project-' + idx} className="flex items-center gap-3 p-2 bg-white/5 rounded-lg border border-white/10">
+                            <input
+                              type="checkbox"
+                              checked={completedItems.includes(project)}
+                              onChange={() => toggleRoadmapItem(project)}
+                              className="w-5 h-5 rounded border-gray-600 text-purple-600 focus:ring-purple-500"
+                            />
+                            <span className="text-white">{project}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
                 ))}
               </div>
             </div>

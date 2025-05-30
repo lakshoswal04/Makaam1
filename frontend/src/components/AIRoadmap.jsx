@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { FaSpinner, FaRoad, FaBook, FaTools, FaBriefcase } from 'react-icons/fa';
 import { userService } from '../services/api';
 
-const AIRoadmap = ({ userProfile, showActions = false }) => {
+const AIRoadmap = ({ userProfile, showActions = false, completedItems = {} }) => {
   const [roadmap, setRoadmap] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -75,79 +75,88 @@ const AIRoadmap = ({ userProfile, showActions = false }) => {
     }
   };
 
-  const RoadmapPhase = ({ phase, icon }) => (
-    <div className="bg-dark-400 rounded-lg p-6 shadow-md mb-6">
-      <div className="flex items-center mb-4">
-        {icon}
-        <h3 className="text-xl font-semibold ml-2">{phase.title}</h3>
-      </div>
-      
-      <div className="space-y-4">
-        {phase.description && (
-          <p className="text-gray-300">{phase.description}</p>
-        )}
+  const calculateProgress = (phase) => {
+    if (!roadmap || !completedItems[phase]) return 0;
+    const totalItems = roadmap[phase].topics.length + roadmap[phase].projects.length;
+    const completed = completedItems[phase].length;
+    return totalItems > 0 ? Math.round((completed / totalItems) * 100) : 0;
+  };
+
+  const RoadmapPhase = ({ phase, icon }) => {
+    return (
+      <div className="bg-dark-400 rounded-lg p-6 shadow-md mb-6">
+        <div className="flex items-center mb-4">
+          {icon}
+          <h3 className="text-xl font-semibold ml-2">{phase.title}</h3>
+        </div>
         
-        {phase.topics && phase.topics.length > 0 && (
-          <div>
-            <h4 className="text-md font-medium text-purple-400 mb-2">Topics to Cover</h4>
-            <ul className="list-disc pl-5 space-y-1">
-              {phase.topics.map((topic, index) => (
-                <li key={index} className="text-gray-300">{topic}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {phase.tools && phase.tools.length > 0 && (
-          <div>
-            <h4 className="text-md font-medium text-purple-400 mb-2">Tools & Technologies</h4>
-            <div className="flex flex-wrap gap-2">
-              {phase.tools.map((tool, index) => (
-                <span key={index} className="bg-dark-300 px-3 py-1 rounded-full text-sm">
-                  {tool}
-                </span>
-              ))}
+        <div className="space-y-4">
+          {phase.description && (
+            <p className="text-gray-300">{phase.description}</p>
+          )}
+          
+          {phase.topics && phase.topics.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium text-purple-400 mb-2">Topics to Cover</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                {phase.topics.map((topic, index) => (
+                  <li key={index} className="text-gray-300">{topic}</li>
+                ))}
+              </ul>
             </div>
-          </div>
-        )}
-        
-        {phase.projects && phase.projects.length > 0 && (
-          <div>
-            <h4 className="text-md font-medium text-purple-400 mb-2">Suggested Projects</h4>
-            <ul className="list-disc pl-5 space-y-1">
-              {phase.projects.map((project, index) => (
-                <li key={index} className="text-gray-300">{project}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {phase.resources && phase.resources.length > 0 && (
-          <div>
-            <h4 className="text-md font-medium text-purple-400 mb-2">Helpful Resources</h4>
-            <ul className="list-disc pl-5 space-y-1">
-              {phase.resources.map((resource, index) => (
-                <li key={index} className="text-gray-300">
-                  {resource.url ? (
-                    <a 
-                      href={resource.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-purple-400 hover:text-purple-300 underline"
-                    >
-                      {resource.title || resource.url}
-                    </a>
-                  ) : (
-                    resource.title
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          )}
+          
+          {phase.tools && phase.tools.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium text-purple-400 mb-2">Tools & Technologies</h4>
+              <div className="flex flex-wrap gap-2">
+                {phase.tools.map((tool, index) => (
+                  <span key={index} className="bg-dark-300 px-3 py-1 rounded-full text-sm">
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {phase.projects && phase.projects.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium text-purple-400 mb-2">Suggested Projects</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                {phase.projects.map((project, index) => (
+                  <li key={index} className="text-gray-300">{project}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {phase.resources && phase.resources.length > 0 && (
+            <div>
+              <h4 className="text-md font-medium text-purple-400 mb-2">Helpful Resources</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                {phase.resources.map((resource, index) => (
+                  <li key={index} className="text-gray-300">
+                    {resource.url ? (
+                      <a 
+                        href={resource.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-purple-400 hover:text-purple-300 underline"
+                      >
+                        {resource.title || resource.url}
+                      </a>
+                    ) : (
+                      resource.title
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="bg-dark-500 rounded-lg shadow-lg p-6 mt-8">
@@ -213,35 +222,10 @@ const AIRoadmap = ({ userProfile, showActions = false }) => {
       
       {roadmap && (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4">
-            {roadmap.learn && (
-              <RoadmapPhase 
-                phase={roadmap.learn} 
-                icon={<FaBook className="text-purple-500" size={20} />} 
-              />
-            )}
-            
-            {roadmap.practice && (
-              <RoadmapPhase 
-                phase={roadmap.practice} 
-                icon={<FaTools className="text-purple-500" size={20} />} 
-              />
-            )}
-            
-            {roadmap.build && (
-              <RoadmapPhase 
-                phase={roadmap.build} 
-                icon={<FaRoad className="text-purple-500" size={20} />} 
-              />
-            )}
-            
-            {roadmap.apply && (
-              <RoadmapPhase 
-                phase={roadmap.apply} 
-                icon={<FaBriefcase className="text-purple-500" size={20} />} 
-              />
-            )}
-          </div>
+          <RoadmapPhase phase={roadmap.learn} icon={<FaBook className="text-purple-400" />} />
+          <RoadmapPhase phase={roadmap.practice} icon={<FaTools className="text-purple-400" />} />
+          <RoadmapPhase phase={roadmap.build} icon={<FaBriefcase className="text-purple-400" />} />
+          <RoadmapPhase phase={roadmap.apply} icon={<FaRoad className="text-purple-400" />} />
           
           <div className="bg-dark-400 rounded-lg p-4 text-sm text-gray-400">
             <p>
